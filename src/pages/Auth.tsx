@@ -11,17 +11,16 @@ const AuthPage = () => {
   const from = (location.state as any)?.from?.pathname || '/';
   const isResetPassword = location.pathname === '/auth/reset-password';
 
-  const currentOrigin = window.location.origin;
-  console.log("Current origin for auth redirect:", currentOrigin);
+  console.log("Auth page: Current location state:", location.state);
+  console.log("Auth page: Redirecting to:", from);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
+      console.log("Auth state changed:", event, "Session:", session?.user?.email);
       
       if (event === 'SIGNED_IN' && session) {
-        console.log("User signed in successfully:", session.user);
-        
         try {
+          // Check if user is admin
           const { data: adminProfile, error: adminError } = await supabase
             .from('admin_profiles')
             .select('is_admin')
@@ -32,16 +31,32 @@ const AuthPage = () => {
             console.error("Error checking admin status:", adminError);
           }
 
+          // Create profile if it doesn't exist
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({ 
+              id: session.user.id,
+              email: session.user.email,
+              updated_at: new Date().toISOString()
+            });
+
+          if (profileError) {
+            console.error("Error updating profile:", profileError);
+          }
+
+          // Redirect based on user role
           if (adminProfile?.is_admin) {
-            console.log("Admin user detected");
+            console.log("Admin user detected, redirecting to admin dashboard");
             navigate("/admin");
           } else {
+            console.log("Regular user, redirecting to:", from);
             navigate(from);
           }
           
           toast.success("Signed in successfully!");
         } catch (error) {
-          console.error("Error checking admin status:", error);
+          console.error("Error in auth flow:", error);
+          toast.error("An error occurred during sign in");
           navigate(from);
         }
       } else if (event === 'SIGNED_OUT') {
@@ -53,7 +68,7 @@ const AuthPage = () => {
       } else if (event === 'USER_UPDATED') {
         console.log("User profile updated");
         toast.success("Profile updated successfully");
-        navigate('/');
+        navigate('/account');
       }
     });
 
@@ -95,10 +110,33 @@ const AuthPage = () => {
             }}
             theme="light"
             providers={[]}
-            redirectTo={`${currentOrigin}/account`}
-            onlyThirdPartyProviders={false}
-            view={isResetPassword ? "update_password" : "sign_in"}
-            showLinks={true}
+            redirectTo={window.location.origin + '/account'}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              if (error.message.includes('password')) {
+                toast.error(
+                  "Password must be at least 8 characters long and contain at least one number and one special character"
+                );
+              } else if (error.message.includes('email')) {
+                toast.error("Please enter a valid email address");
+              } else {
+                toast.error(error.message);
+              }
+            }}
+            localization={{
+              variables: {
+                sign_up: {
+                  password_label: 'Password (min 8 characters, include numbers and special characters)',
+                  email_label: 'Email address',
+                  button_label: 'Create account',
+                },
+                sign_in: {
+                  password_label: 'Your password',
+                  email_label: 'Your email address',
+                  button_label: 'Sign in',
+                }
+              }
+            }}
           />
         </div>
       </div>
