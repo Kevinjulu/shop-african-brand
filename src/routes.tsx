@@ -22,6 +22,10 @@ import TrackOrder from "@/pages/TrackOrder";
 import Admin from "@/pages/Admin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
+import { AuthProvider } from "./components/AuthProvider";
+import { CartProvider } from "./contexts/CartContext";
+import { Preloader } from "./components/Preloader";
+import { NewsletterPopup } from "./components/NewsletterPopup";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
@@ -41,10 +45,22 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
+const RootLayout = () => {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Preloader />
+        <Layout />
+        <NewsletterPopup />
+      </CartProvider>
+    </AuthProvider>
+  );
+};
+
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <RootLayout />,
     errorElement: <ErrorFallback error={new Error("Page not found")} />,
     children: [
       { index: true, element: <Home /> },

@@ -32,14 +32,8 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CartProvider>
-            <Preloader />
-            <RouterProvider router={router} />
-            <NewsletterPopup />
-            <Toaster position="top-center" />
-          </CartProvider>
-        </AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-center" />
       </QueryClientProvider>
     </ErrorBoundary>
   );
