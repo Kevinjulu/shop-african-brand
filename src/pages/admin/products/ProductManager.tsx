@@ -2,8 +2,10 @@ import { useState } from "react";
 import { ProductTable } from "@/components/admin/products/ProductTable";
 import { ProductActions } from "@/components/admin/products/ProductActions";
 import { ProductFormDialog } from "@/components/admin/products/ProductFormDialog";
+import { InventoryManager } from "@/components/admin/products/InventoryManager";
 import { Product } from "@/types/product";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -101,17 +103,32 @@ const ProductManager = () => {
         />
       </div>
 
-      <ProductTable
-        products={products || []}
-        isLoading={isLoading}
-        selectedProducts={selectedProducts}
-        setSelectedProducts={setSelectedProducts}
-        onEdit={(product) => {
-          setSelectedProduct(product);
-          setShowForm(true);
-        }}
-        onDelete={handleDelete}
-      />
+      <Tabs defaultValue="products" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="inventory">Inventory</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="products">
+          <ProductTable
+            products={products || []}
+            isLoading={isLoading}
+            selectedProducts={selectedProducts}
+            setSelectedProducts={setSelectedProducts}
+            onEdit={(product) => {
+              setSelectedProduct(product);
+              setShowForm(true);
+            }}
+            onDelete={handleDelete}
+          />
+        </TabsContent>
+
+        <TabsContent value="inventory">
+          <Card className="p-6">
+            <InventoryManager />
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <ProductFormDialog
         open={showForm}
