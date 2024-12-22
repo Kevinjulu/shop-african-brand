@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
+import { toast } from "sonner";
 
 export const useAdmin = () => {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export const useAdmin = () => {
 
         if (error) {
           console.error('Error checking admin status:', error);
+          toast.error('Error verifying admin status');
           setIsAdmin(false);
         } else {
           console.log("Admin check result:", data);
@@ -32,6 +34,7 @@ export const useAdmin = () => {
         }
       } catch (error) {
         console.error('Error checking admin status:', error);
+        toast.error('Error checking admin permissions');
         setIsAdmin(false);
       } finally {
         setLoading(false);

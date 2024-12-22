@@ -17,8 +17,8 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     currentPath: location.pathname
   });
 
-  // Show loading state while checking authentication and admin status
-  if (authLoading || adminLoading) {
+  // Show loading state only during initial auth/admin check
+  if ((authLoading || adminLoading) && !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />

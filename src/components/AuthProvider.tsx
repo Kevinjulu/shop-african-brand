@@ -50,8 +50,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  if (loading) {
-    console.log("AuthProvider: Loading state");
+  // Only show loading spinner for initial auth check
+  if (loading && !user) {
+    console.log("AuthProvider: Initial loading state");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
