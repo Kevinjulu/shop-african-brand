@@ -48,12 +48,12 @@ const AuthPage = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, "Session:", session?.user?.email);
+      console.log("Auth state changed:", event, session?.user?.email);
       
       if (event === 'SIGNED_IN' && session) {
         try {
           // Check if user is admin
-          const { data: adminProfile, error: adminError } = await supabase
+          const { data: adminData, error: adminError } = await supabase
             .from('admin_profiles')
             .select('is_admin')
             .eq('id', session.user.id)
@@ -77,7 +77,7 @@ const AuthPage = () => {
           }
 
           // Redirect based on user role
-          if (adminProfile?.is_admin) {
+          if (adminData?.is_admin) {
             console.log("Admin user detected, redirecting to admin dashboard");
             navigate("/admin");
           } else {
