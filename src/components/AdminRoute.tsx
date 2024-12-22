@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useAuth } from "./AuthProvider";
-import { LoadingFallback } from "@/routes/LoadingFallback";
+import { LoadingSpinner } from "./LoadingSpinner";
 import { toast } from "sonner";
 
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -13,7 +13,11 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   // Show loading state while checking authentication and admin status
   if (authLoading || adminLoading) {
-    return <LoadingFallback />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   // If not authenticated, redirect to auth page

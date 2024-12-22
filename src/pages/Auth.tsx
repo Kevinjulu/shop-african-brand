@@ -1,18 +1,50 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const from = (location.state as any)?.from?.pathname || '/';
   const isResetPassword = location.pathname === '/auth/reset-password';
 
   console.log("Auth page: Current location state:", location.state);
   console.log("Auth page: Redirecting to:", from);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          console.log("User already authenticated, checking admin status");
+          const { data: adminData } = await supabase
+            .from('admin_profiles')
+            .select('is_admin')
+            .eq('id', session.user.id)
+            .single();
+
+          if (adminData?.is_admin) {
+            console.log("Admin user detected, redirecting to admin dashboard");
+            navigate("/admin");
+          } else {
+            console.log("Regular user, redirecting to:", from);
+            navigate(from);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [navigate, from]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -59,16 +91,6 @@ const AuthPage = () => {
           toast.error("An error occurred during sign in");
           navigate(from);
         }
-      } else if (event === 'SIGNED_OUT') {
-        console.log("User signed out");
-        toast.info("Signed out successfully");
-      } else if (event === 'PASSWORD_RECOVERY') {
-        console.log("Password recovery event detected");
-        toast.info("Please enter your new password below");
-      } else if (event === 'USER_UPDATED') {
-        console.log("User profile updated");
-        toast.success("Profile updated successfully");
-        navigate('/account');
       }
     });
 
@@ -77,18 +99,13 @@ const AuthPage = () => {
     };
   }, [navigate, from]);
 
-  const handleAuthError = (error: Error) => {
-    console.error("Auth error:", error);
-    if (error.message.includes('password')) {
-      toast.error(
-        "Password must be at least 8 characters long and contain at least one number and one special character"
-      );
-    } else if (error.message.includes('email')) {
-      toast.error("Please enter a valid email address");
-    } else {
-      toast.error(error.message);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-12 sm:px-6 lg:px-8">
