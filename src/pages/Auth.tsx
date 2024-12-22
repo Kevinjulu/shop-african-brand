@@ -1,4 +1,4 @@
-import { Auth } from "@supabase/auth-ui-react";
+import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -77,6 +77,19 @@ const AuthPage = () => {
     };
   }, [navigate, from]);
 
+  const handleAuthError = (error: Error) => {
+    console.error("Auth error:", error);
+    if (error.message.includes('password')) {
+      toast.error(
+        "Password must be at least 8 characters long and contain at least one number and one special character"
+      );
+    } else if (error.message.includes('email')) {
+      toast.error("Please enter a valid email address");
+    } else {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -95,7 +108,7 @@ const AuthPage = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Auth
+          <SupabaseAuth
             supabaseClient={supabase}
             appearance={{ 
               theme: ThemeSupa,
@@ -111,18 +124,6 @@ const AuthPage = () => {
             theme="light"
             providers={[]}
             redirectTo={window.location.origin + '/account'}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              if (error.message.includes('password')) {
-                toast.error(
-                  "Password must be at least 8 characters long and contain at least one number and one special character"
-                );
-              } else if (error.message.includes('email')) {
-                toast.error("Please enter a valid email address");
-              } else {
-                toast.error(error.message);
-              }
-            }}
             localization={{
               variables: {
                 sign_up: {
