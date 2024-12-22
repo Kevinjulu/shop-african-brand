@@ -22,6 +22,11 @@ interface CategoryListProps {
   onSave: (id: string) => void;
 }
 
+interface CategoryCount {
+  category: string;
+  count: number;
+}
+
 export const CategoryList = ({
   categories,
   onEdit,
@@ -33,21 +38,28 @@ export const CategoryList = ({
   const { data: productCounts } = useQuery({
     queryKey: ['category-product-counts'],
     queryFn: async () => {
+      console.log('Fetching category product counts...');
       const { data, error } = await supabase
         .from('products')
-        .select('category, count')
-        .count()
-        .group('category');
+        .select('category')
+        .not('category', 'is', null)
+        .then(result => {
+          // Count products per category manually
+          const counts: Record<string, number> = {};
+          result.data?.forEach(product => {
+            if (product.category) {
+              counts[product.category] = (counts[product.category] || 0) + 1;
+            }
+          });
+          return { data: counts, error: result.error };
+        });
 
       if (error) {
         console.error('Error fetching product counts:', error);
         return {};
       }
 
-      return data.reduce((acc, curr) => ({
-        ...acc,
-        [curr.category]: curr.count
-      }), {});
+      return data;
     }
   });
 
