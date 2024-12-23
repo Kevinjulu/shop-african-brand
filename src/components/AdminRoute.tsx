@@ -18,7 +18,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   });
 
   // Show loading state only during initial auth/admin check
-  if ((authLoading || adminLoading) && !user) {
+  if (authLoading || adminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -26,11 +26,11 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // If not authenticated, redirect to auth page
+  // If not authenticated, redirect to auth page with return URL
   if (!user) {
     console.log("AdminRoute - No user, redirecting to auth");
     toast.error("Please sign in to access admin features");
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
   // If authenticated but not admin, redirect to home

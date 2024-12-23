@@ -4,10 +4,15 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { toast } from "sonner";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, error } = useAuth();
   const location = useLocation();
 
-  console.log("ProtectedRoute - Loading:", loading, "User:", user?.email);
+  console.log("ProtectedRoute - State:", { 
+    loading, 
+    userEmail: user?.email,
+    error: error?.message,
+    currentPath: location.pathname 
+  });
 
   if (loading) {
     return (
@@ -17,10 +22,16 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  if (error) {
+    console.error("ProtectedRoute - Auth error:", error);
+    toast.error(`Authentication error: ${error.message}`);
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+  }
+
   if (!user) {
     console.log("ProtectedRoute - No user found, redirecting to auth");
     toast.error("Please sign in to access this page");
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
   return <>{children}</>;
