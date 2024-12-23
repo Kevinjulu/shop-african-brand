@@ -20,7 +20,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const { formatPrice } = useCurrency();
 
   return (
-    <Link to={`/product/${product.id}`}>
+    <Link to={`/products/${product.id}`}>
       <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 h-full bg-white overflow-hidden">
         <CardContent className="p-0">
           <div className="relative">
