@@ -1615,10 +1615,13 @@ export type Database = {
           commission_rate: number | null
           contact_email: string | null
           contact_phone: string | null
+          country: string | null
           created_at: string
           description: string | null
+          featured: boolean | null
           id: string
           logo_url: string | null
+          specialties: string[] | null
           status: string
           suspension_reason: string | null
           updated_at: string
@@ -1634,10 +1637,13 @@ export type Database = {
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
+          specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
           updated_at?: string
@@ -1653,10 +1659,13 @@ export type Database = {
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
+          specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
           updated_at?: string
