@@ -3,11 +3,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import { useEffect, useState } from "react";
+import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
 
 const promos = [
   {
@@ -31,14 +28,10 @@ const promos = [
 ];
 
 export const PromoSection = () => {
-  const [api, setApi] = useState<any>(null);
-  const autoplayPlugin = Autoplay({ delay: 4000, stopOnInteraction: true });
-
-  useEffect(() => {
-    if (api) {
-      console.log("Promo carousel initialized");
-    }
-  }, [api]);
+  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
+    delay: 4000,
+    stopOnInteraction: true,
+  });
 
   return (
     <section className="py-8 md:py-12 bg-cream">
@@ -74,8 +67,9 @@ export const PromoSection = () => {
         {/* Mobile Carousel Layout */}
         <div className="md:hidden">
           <Carousel
-            setApi={setApi}
-            plugins={[autoplayPlugin]}
+            setApi={onApiChange}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className="w-full"
             opts={{
               align: "start",
@@ -107,19 +101,6 @@ export const PromoSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="absolute -bottom-8 left-0 right-0 flex justify-center gap-1">
-              {promos.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    api?.selectedScrollSnap() === index
-                      ? "bg-primary w-4"
-                      : "bg-primary/30"
-                  }`}
-                  onClick={() => api?.scrollTo(index)}
-                />
-              ))}
-            </div>
           </Carousel>
         </div>
       </div>

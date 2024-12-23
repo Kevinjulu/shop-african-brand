@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
@@ -10,27 +8,24 @@ import {
 import { CarouselSlide } from "./hero/CarouselSlide";
 import { PromoBanner } from "./hero/PromoBanner";
 import { carouselItems } from "@/data/categories";
+import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
 
 export const Hero = () => {
-  const [api, setApi] = useState<any>(null);
-  const autoplayPlugin = Autoplay({ delay: 5000, stopOnInteraction: true });
-
-  useEffect(() => {
-    if (api) {
-      console.log("Carousel initialized");
-    }
-  }, [api]);
+  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
+    delay: 5000,
+    stopOnInteraction: true,
+  });
 
   return (
     <div className="bg-cream">
       <div className="container mx-auto px-3 md:px-4 py-3 md:py-6">
         <div className="grid grid-cols-12 gap-2 md:gap-4">
-          {/* Main Carousel - Full width */}
           <div className="col-span-12 lg:col-span-9">
             <Carousel 
               className="relative rounded-lg overflow-hidden"
-              plugins={[autoplayPlugin]}
-              setApi={setApi}
+              setApi={onApiChange}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <CarouselContent>
                 {carouselItems.map((item, index) => (
@@ -44,7 +39,6 @@ export const Hero = () => {
             </Carousel>
           </div>
 
-          {/* Promotional Banners - Stack on mobile */}
           <div className="col-span-12 lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-2 md:gap-4">
             <PromoBanner
               title="Traditional Beadwork"

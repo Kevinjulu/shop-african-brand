@@ -19,8 +19,17 @@ import Affiliate from "@/pages/Affiliate";
 import Terms from "@/pages/Terms";
 import VendorRegister from "@/pages/VendorRegister";
 import TrackOrder from "@/pages/TrackOrder";
+import Admin from "@/pages/Admin";
+import Index from "@/pages/Index";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/AdminRoute";
+import { AuthProvider } from "./components/AuthProvider";
+import { CartProvider } from "./contexts/CartContext";
+import { Preloader } from "./components/Preloader";
+import { NewsletterPopup } from "./components/NewsletterPopup";
 
 function ErrorFallback({ error }: { error: Error }) {
+  console.error("Router error:", error);
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="text-center">
@@ -37,19 +46,32 @@ function ErrorFallback({ error }: { error: Error }) {
   );
 }
 
+const RootLayout = () => {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Preloader />
+        <Layout />
+        <NewsletterPopup />
+      </CartProvider>
+    </AuthProvider>
+  );
+};
+
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <RootLayout />,
     errorElement: <ErrorFallback error={new Error("Page not found")} />,
     children: [
-      { path: "/", element: <Home /> },
+      { index: true, element: <Index /> }, // Explicitly set Index component as root route
       { path: "/products", element: <Products /> },
       { path: "/products/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
-      { path: "/wishlist", element: <Wishlist /> },
-      { path: "/account", element: <Account /> },
+      { path: "/wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+      { path: "/account", element: <ProtectedRoute><Account /></ProtectedRoute> },
       { path: "/auth", element: <Auth /> },
+      { path: "/auth/reset-password", element: <Auth /> },
       { path: "/stores", element: <Stores /> },
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
@@ -61,6 +83,7 @@ export const router = createBrowserRouter([
       { path: "/terms", element: <Terms /> },
       { path: "/vendor/register", element: <VendorRegister /> },
       { path: "/track-order", element: <TrackOrder /> },
+      { path: "/admin/*", element: <AdminRoute><Admin /></AdminRoute> },
     ],
   },
 ]);

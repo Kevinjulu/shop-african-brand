@@ -7,7 +7,6 @@ import { TrendingProducts } from "@/components/TrendingProducts";
 import { FeaturedCategories } from "@/components/FeaturedCategories";
 import { TopCategories } from "@/components/TopCategories";
 import { PromoSection } from "@/components/PromoSection";
-import { Newsletter } from "@/components/Newsletter";
 import { DiscountBanner } from "@/components/discounts/DiscountBanner";
 
 const Index = () => {
@@ -24,10 +23,8 @@ const Index = () => {
       <TrendingProducts />
       <BestSellers />
       <PromoSection />
-      <Newsletter />
     </Fragment>
   );
 };
 
-// Make sure to use a default export
 export default Index;

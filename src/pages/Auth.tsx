@@ -1,28 +1,59 @@
-import { Auth } from "@supabase/auth-ui-react";
+import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const from = (location.state as any)?.from?.pathname || '/';
   const isResetPassword = location.pathname === '/auth/reset-password';
 
-  const currentOrigin = window.location.origin;
-  console.log("Current origin for auth redirect:", currentOrigin);
+  console.log("Auth page: Current location state:", location.state);
+  console.log("Auth page: Redirecting to:", from);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          console.log("User already authenticated, checking admin status");
+          const { data: adminData } = await supabase
+            .from('admin_profiles')
+            .select('is_admin')
+            .eq('id', session.user.id)
+            .single();
+
+          if (adminData?.is_admin) {
+            console.log("Admin user detected, redirecting to admin dashboard");
+            navigate("/admin");
+          } else {
+            console.log("Regular user, redirecting to:", from);
+            navigate(from);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [navigate, from]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
+      console.log("Auth state changed:", event, session?.user?.email);
       
       if (event === 'SIGNED_IN' && session) {
-        console.log("User signed in successfully:", session.user);
-        
         try {
-          const { data: adminProfile, error: adminError } = await supabase
+          // Check if user is admin
+          const { data: adminData, error: adminError } = await supabase
             .from('admin_profiles')
             .select('is_admin')
             .eq('id', session.user.id)
@@ -32,28 +63,34 @@ const AuthPage = () => {
             console.error("Error checking admin status:", adminError);
           }
 
-          if (adminProfile?.is_admin) {
-            console.log("Admin user detected");
+          // Create profile if it doesn't exist
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({ 
+              id: session.user.id,
+              email: session.user.email,
+              updated_at: new Date().toISOString()
+            });
+
+          if (profileError) {
+            console.error("Error updating profile:", profileError);
+          }
+
+          // Redirect based on user role
+          if (adminData?.is_admin) {
+            console.log("Admin user detected, redirecting to admin dashboard");
             navigate("/admin");
           } else {
+            console.log("Regular user, redirecting to:", from);
             navigate(from);
           }
           
           toast.success("Signed in successfully!");
         } catch (error) {
-          console.error("Error checking admin status:", error);
+          console.error("Error in auth flow:", error);
+          toast.error("An error occurred during sign in");
           navigate(from);
         }
-      } else if (event === 'SIGNED_OUT') {
-        console.log("User signed out");
-        toast.info("Signed out successfully");
-      } else if (event === 'PASSWORD_RECOVERY') {
-        console.log("Password recovery event detected");
-        toast.info("Please enter your new password below");
-      } else if (event === 'USER_UPDATED') {
-        console.log("User profile updated");
-        toast.success("Profile updated successfully");
-        navigate('/');
       }
     });
 
@@ -61,6 +98,14 @@ const AuthPage = () => {
       subscription.unsubscribe();
     };
   }, [navigate, from]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-12 sm:px-6 lg:px-8">
@@ -80,7 +125,7 @@ const AuthPage = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Auth
+          <SupabaseAuth
             supabaseClient={supabase}
             appearance={{ 
               theme: ThemeSupa,
@@ -95,10 +140,21 @@ const AuthPage = () => {
             }}
             theme="light"
             providers={[]}
-            redirectTo={`${currentOrigin}/account`}
-            onlyThirdPartyProviders={false}
-            view={isResetPassword ? "update_password" : "sign_in"}
-            showLinks={true}
+            redirectTo={window.location.origin + '/account'}
+            localization={{
+              variables: {
+                sign_up: {
+                  password_label: 'Password (min 8 characters, include numbers and special characters)',
+                  email_label: 'Email address',
+                  button_label: 'Create account',
+                },
+                sign_in: {
+                  password_label: 'Your password',
+                  email_label: 'Your email address',
+                  button_label: 'Sign in',
+                }
+              }
+            }}
           />
         </div>
       </div>

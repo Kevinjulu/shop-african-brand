@@ -5,8 +5,7 @@ import {
 } from "@/components/ui/carousel";
 import { ProductCard } from "./ProductCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Autoplay from "embla-carousel-autoplay";
-import { useState, useEffect } from "react";
+import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
 
 interface ProductSliderProps {
   products: Array<{
@@ -22,14 +21,10 @@ interface ProductSliderProps {
 
 export const ProductSlider = ({ products }: ProductSliderProps) => {
   const isMobile = useIsMobile();
-  const [api, setApi] = useState<any>(null);
-  const autoplayPlugin = Autoplay({ delay: 3000, stopOnInteraction: true });
-
-  useEffect(() => {
-    if (!api) return;
-
-    console.log("Carousel initialized");
-  }, [api]);
+  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
+    delay: 3000,
+    stopOnInteraction: true,
+  });
 
   if (!isMobile) {
     return (
@@ -43,8 +38,9 @@ export const ProductSlider = ({ products }: ProductSliderProps) => {
 
   return (
     <Carousel
-      setApi={setApi}
-      plugins={[autoplayPlugin]}
+      setApi={onApiChange}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="w-full"
       opts={{
         align: "start",
@@ -58,19 +54,6 @@ export const ProductSlider = ({ products }: ProductSliderProps) => {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div className="absolute -bottom-4 left-0 right-0 flex justify-center gap-1">
-        {products.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-all ${
-              api?.selectedScrollSnap() === index
-                ? "bg-primary w-4"
-                : "bg-primary/30"
-            }`}
-            onClick={() => api?.scrollTo(index)}
-          />
-        ))}
-      </div>
     </Carousel>
   );
 };

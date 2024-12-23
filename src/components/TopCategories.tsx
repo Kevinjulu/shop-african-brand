@@ -16,8 +16,9 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Autoplay from "embla-carousel-autoplay";
-import { useEffect, useState } from "react";
+import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
+import { useState } from "react";
+import { type EmblaCarouselType } from "embla-carousel";
 
 const categories = [
   { 
@@ -64,14 +65,11 @@ const categories = [
 
 export const TopCategories = () => {
   const isMobile = useIsMobile();
-  const [api, setApi] = useState<any>(null);
-  const autoplayPlugin = Autoplay({ delay: 3000, stopOnInteraction: true });
-
-  useEffect(() => {
-    if (api) {
-      console.log("Mobile carousel initialized with autoplay");
-    }
-  }, [api]);
+  const [emblaApi, setEmblaApi] = useState<EmblaCarouselType | null>(null);
+  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
+    delay: 3000,
+    stopOnInteraction: true,
+  });
 
   const CategoryCard = ({ category }: { category: typeof categories[0] }) => {
     const Icon = category.icon;
@@ -108,8 +106,9 @@ export const TopCategories = () => {
               align: "center",
               loop: true,
             }}
-            plugins={[autoplayPlugin]}
-            setApi={setApi}
+            setApi={onApiChange}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
@@ -124,11 +123,11 @@ export const TopCategories = () => {
                 <button
                   key={index}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    api?.selectedScrollSnap() === index
+                    emblaApi?.selectedScrollSnap() === index
                       ? "bg-primary w-4"
                       : "bg-primary/30"
                   }`}
-                  onClick={() => api?.scrollTo(index)}
+                  onClick={() => emblaApi?.scrollTo(index)}
                 />
               ))}
             </div>

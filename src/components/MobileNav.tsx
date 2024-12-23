@@ -1,9 +1,8 @@
-import { Home, Search, ShoppingCart, Heart, User } from "lucide-react";
+import { Home, Search, Store, ShoppingCart, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "./auth/AuthProvider";
 import { useCart } from "@/contexts/CartContext";
-import { useWishlistCount } from "@/hooks/useWishlistCount";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { SearchInput } from "./search/SearchInput";
 import { useState } from "react";
@@ -14,7 +13,6 @@ export const MobileNav = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { itemsCount } = useCart();
-  const { wishlistCount } = useWishlistCount();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -31,16 +29,15 @@ export const MobileNav = () => {
       onClick: () => setIsSearchOpen(true)
     },
     {
+      icon: Store,
+      label: "Brands",
+      href: "/stores",
+    },
+    {
       icon: ShoppingCart,
       label: "Cart",
       href: "/cart",
       count: itemsCount
-    },
-    {
-      icon: Heart,
-      label: "Wishlist",
-      href: "/wishlist",
-      count: wishlistCount
     },
     {
       icon: User,

@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
 
 export const Logo = () => {
-  const isDevelopment = import.meta.env.MODE === 'development';
-  const logoPath = isDevelopment 
-    ? '/lovable-uploads/dfdf98ce-6665-4af0-aa1d-71c82f1fe485.png'
-    : '/shop-african-brand/lovable-uploads/dfdf98ce-6665-4af0-aa1d-71c82f1fe485.png';
+  // Get the base URL from the current window location
+  const baseUrl = window.location.pathname.includes('/shop-african-brand') 
+    ? '/shop-african-brand'
+    : '';
     
+  const logoPath = `${baseUrl}/lovable-uploads/dfdf98ce-6665-4af0-aa1d-71c82f1fe485.png`;
+  
   console.log('Logo path:', logoPath);
-  console.log('Environment:', import.meta.env.MODE);
+  console.log('Base URL:', baseUrl);
+  console.log('Current pathname:', window.location.pathname);
 
   return (
     <Link to="/" className="flex-shrink-0 md:flex-none w-full md:w-auto flex justify-center md:justify-start">

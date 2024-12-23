@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -10,10 +11,10 @@ import { InventoryField } from "./InventoryField";
 import { SEOFields } from "./SEOFields";
 import { ImageSection } from "./form/ImageSection";
 import { ProductFormActions } from "./form/ProductFormActions";
-import { useState, useEffect } from "react";
 import { handleProductSubmit } from "./form/ProductFormHandler";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 const productSchema = z.object({
   name: z.string().min(2, {
@@ -34,7 +35,7 @@ const productSchema = z.object({
 });
 
 interface ProductFormProps {
-  product?: Product;
+  product?: Product | null;
   onSuccess?: () => void;
 }
 
@@ -59,6 +60,7 @@ export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
     },
   });
 
+  // Set up real-time updates for product changes
   useEffect(() => {
     if (!product?.id) return;
 
@@ -113,6 +115,7 @@ export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
       setUploadedImages([]);
     } catch (error) {
       console.error("Error submitting product:", error);
+      toast.error("Failed to save product");
     } finally {
       setIsLoading(false);
     }

@@ -477,6 +477,48 @@ export type Database = {
           },
         ]
       }
+      inventory_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          notify_on_low_stock: boolean | null
+          notify_on_out_of_stock: boolean | null
+          updated_at: string | null
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notify_on_low_stock?: boolean | null
+          notify_on_out_of_stock?: boolean | null
+          updated_at?: string | null
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notify_on_low_stock?: boolean | null
+          notify_on_out_of_stock?: boolean | null
+          updated_at?: string | null
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_preferences_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_analytics_summary"
+            referencedColumns: ["vendor_id"]
+          },
+          {
+            foreignKeyName: "inventory_preferences_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplaces: {
         Row: {
           country: string
@@ -1043,6 +1085,7 @@ export type Database = {
           inventory_quantity: number
           is_bulk_only: boolean | null
           keywords: string | null
+          low_stock_threshold: number | null
           meta_description: string | null
           meta_title: string | null
           minimum_order_quantity: number | null
@@ -1065,6 +1108,7 @@ export type Database = {
           inventory_quantity?: number
           is_bulk_only?: boolean | null
           keywords?: string | null
+          low_stock_threshold?: number | null
           meta_description?: string | null
           meta_title?: string | null
           minimum_order_quantity?: number | null
@@ -1087,6 +1131,7 @@ export type Database = {
           inventory_quantity?: number
           is_bulk_only?: boolean | null
           keywords?: string | null
+          low_stock_threshold?: number | null
           meta_description?: string | null
           meta_title?: string | null
           minimum_order_quantity?: number | null
@@ -1570,10 +1615,13 @@ export type Database = {
           commission_rate: number | null
           contact_email: string | null
           contact_phone: string | null
+          country: string | null
           created_at: string
           description: string | null
+          featured: boolean | null
           id: string
           logo_url: string | null
+          specialties: string[] | null
           status: string
           suspension_reason: string | null
           updated_at: string
@@ -1589,10 +1637,13 @@ export type Database = {
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
+          specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
           updated_at?: string
@@ -1608,10 +1659,13 @@ export type Database = {
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
+          specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
           updated_at?: string

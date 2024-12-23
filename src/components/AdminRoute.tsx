@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useAuth } from "./AuthProvider";
-import { LoadingFallback } from "@/routes/LoadingFallback";
+import { LoadingSpinner } from "./LoadingSpinner";
 import { toast } from "sonner";
 
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -9,11 +9,21 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, loading: adminLoading } = useAdmin();
   const location = useLocation();
 
-  console.log("AdminRoute - Auth State:", { user, authLoading, isAdmin, adminLoading });
+  console.log("AdminRoute - Auth State:", { 
+    userEmail: user?.email, 
+    authLoading, 
+    isAdmin, 
+    adminLoading,
+    currentPath: location.pathname
+  });
 
-  // Show loading state while checking authentication and admin status
-  if (authLoading || adminLoading) {
-    return <LoadingFallback />;
+  // Show loading state only during initial auth/admin check
+  if ((authLoading || adminLoading) && !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   // If not authenticated, redirect to auth page

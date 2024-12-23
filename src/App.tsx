@@ -7,6 +7,7 @@ import { router } from "./routes";
 import { ErrorBoundary } from "react-error-boundary";
 import { Preloader } from "./components/Preloader";
 import { NewsletterPopup } from "./components/NewsletterPopup";
+import { AuthProvider } from "./components/AuthProvider";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Application error:", error);
@@ -31,12 +32,8 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <CartProvider>
-          <Preloader />
-          <RouterProvider router={router} />
-          <NewsletterPopup />
-          <Toaster position="top-center" />
-        </CartProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-center" />
       </QueryClientProvider>
     </ErrorBoundary>
   );
