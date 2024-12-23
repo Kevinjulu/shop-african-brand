@@ -21,6 +21,7 @@ import VendorRegister from "@/pages/VendorRegister";
 import TrackOrder from "@/pages/TrackOrder";
 import Admin from "@/pages/Admin";
 import Index from "@/pages/Index";
+import NotFound from "@/pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
 import { AuthProvider } from "./components/AuthProvider";
@@ -62,28 +63,30 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <ErrorFallback error={new Error("Page not found")} />,
+    errorElement: <NotFound />,
     children: [
-      { index: true, element: <Index /> }, // Explicitly set Index component as root route
-      { path: "/products", element: <Products /> },
-      { path: "/products/:id", element: <ProductDetail /> },
-      { path: "/cart", element: <Cart /> },
-      { path: "/wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
-      { path: "/account", element: <ProtectedRoute><Account /></ProtectedRoute> },
-      { path: "/auth", element: <Auth /> },
-      { path: "/auth/reset-password", element: <Auth /> },
-      { path: "/stores", element: <Stores /> },
-      { path: "/about", element: <About /> },
-      { path: "/contact", element: <Contact /> },
-      { path: "/faq", element: <FAQ /> },
-      { path: "/shipping-policy", element: <ShippingPolicy /> },
-      { path: "/returns-policy", element: <ReturnsPolicy /> },
-      { path: "/careers", element: <Careers /> },
-      { path: "/affiliate", element: <Affiliate /> },
-      { path: "/terms", element: <Terms /> },
-      { path: "/vendor/register", element: <VendorRegister /> },
-      { path: "/track-order", element: <TrackOrder /> },
-      { path: "/admin/*", element: <AdminRoute><Admin /></AdminRoute> },
+      { index: true, element: <Home /> },
+      { path: "products", element: <Products /> },
+      { path: "products/:id", element: <ProductDetail /> },
+      { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute> },
+      { path: "wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+      { path: "account/*", element: <ProtectedRoute><Account /></ProtectedRoute> },
+      { path: "auth", element: <Auth /> },
+      { path: "auth/reset-password", element: <Auth /> },
+      { path: "stores", element: <Stores /> },
+      { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
+      { path: "faq", element: <FAQ /> },
+      { path: "shipping-policy", element: <ShippingPolicy /> },
+      { path: "returns-policy", element: <ReturnsPolicy /> },
+      { path: "careers", element: <Careers /> },
+      { path: "affiliate", element: <Affiliate /> },
+      { path: "terms", element: <Terms /> },
+      { path: "vendor/register", element: <VendorRegister /> },
+      { path: "track-order", element: <TrackOrder /> },
+      { path: "admin/*", element: <AdminRoute><Admin /></AdminRoute> },
+      // Catch-all route for 404
+      { path: "*", element: <NotFound /> }
     ],
   },
 ]);

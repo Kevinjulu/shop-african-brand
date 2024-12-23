@@ -1,1 +1,18 @@
 /* /index.html 200
+
+# Redirect all routes to index.html for client-side routing
+/* /index.html 200
+
+# Handle 404s
+/404 /index.html 200
+
+# Ensure API routes are handled properly
+/api/* /api/:splat 200
+
+# Ensure product routes are handled properly
+/products/* /index.html 200
+/product/* /index.html 200
+
+# Handle admin and vendor routes
+/admin/* /index.html 200
+/vendor/* /index.html 200
