@@ -2,24 +2,8 @@ name = "shop-african-brand"
 compatibility_date = "2024-01-01"
 
 [build]
-command = "npm install && npm run build"
+command = "npm run build"
 pages_build_output_dir = "dist"
 
 [site]
 bucket = "./dist"
-
-[env.production]
-name = "shop-african-brand"
-workers_dev = true
-
-[env.production.build]
-command = "npm install && npm run build"
-pages_build_output_dir = "dist"
-
-[env.staging]
-name = "shop-african-brand-staging"
-workers_dev = true
-
-[env.staging.build]
-command = "npm install && npm run build"
-pages_build_output_dir = "dist"
