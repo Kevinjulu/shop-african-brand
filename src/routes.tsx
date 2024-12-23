@@ -52,7 +52,9 @@ const RootLayout = () => {
     <AuthProvider>
       <CartProvider>
         <Preloader />
-        <Layout />
+        <Layout>
+          <Outlet />
+        </Layout>
         <NewsletterPopup />
       </CartProvider>
     </AuthProvider>
@@ -63,7 +65,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <NotFound />,
+    errorElement: <ErrorFallback />,
     children: [
       { index: true, element: <Home /> },
       { path: "products", element: <Products /> },
@@ -85,7 +87,6 @@ export const router = createBrowserRouter([
       { path: "vendor/register", element: <VendorRegister /> },
       { path: "track-order", element: <TrackOrder /> },
       { path: "admin/*", element: <AdminRoute><Admin /></AdminRoute> },
-      // Catch-all route for 404
       { path: "*", element: <NotFound /> }
     ],
   },

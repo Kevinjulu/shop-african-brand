@@ -7,7 +7,11 @@ import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "./AuthProvider";
 
-export const Layout = () => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export const Layout = ({ children }: LayoutProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSubMenu, setShowSubMenu] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -62,7 +66,7 @@ export const Layout = () => {
         </div>
       </header>
       <main className={`flex-1 ${isMobile ? 'mt-14' : 'mt-[104px]'}`}>
-        <Outlet />
+        {children}
       </main>
       <Footer />
       {isMobile && <MobileNav />}
