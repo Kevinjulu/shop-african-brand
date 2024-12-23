@@ -11,4 +11,6 @@ export interface Store {
   country: string | null;
   featured: boolean;
   specialties: string[];
+  created_at: string; // Added this field
+  updated_at: string; // Added this field for completeness
 }
