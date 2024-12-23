@@ -20,6 +20,7 @@ import Terms from "@/pages/Terms";
 import VendorRegister from "@/pages/VendorRegister";
 import TrackOrder from "@/pages/TrackOrder";
 import Admin from "@/pages/Admin";
+import Index from "@/pages/Index";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
 import { AuthProvider } from "./components/AuthProvider";
@@ -63,7 +64,7 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <ErrorFallback error={new Error("Page not found")} />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <Index /> }, // Explicitly set Index component as root route
       { path: "/products", element: <Products /> },
       { path: "/products/:id", element: <ProductDetail /> },
       { path: "/cart", element: <Cart /> },
