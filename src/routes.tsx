@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { ErrorBoundary } from "react-error-boundary";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
-import ProductDetail from "@/pages/ProductDetail";
+import ProductDetails from "@/pages/ProductDetails";
 import Cart from "@/pages/Cart";
 import Wishlist from "@/pages/Wishlist";
 import Account from "@/pages/Account";
@@ -28,6 +28,8 @@ import { CartProvider } from "./contexts/CartContext";
 import { Preloader } from "./components/Preloader";
 import { NewsletterPopup } from "./components/NewsletterPopup";
 import { Outlet } from "react-router-dom";
+import Checkout from "@/pages/Checkout";
+import OrderConfirmation from "@/pages/OrderConfirmation";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
@@ -69,8 +71,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "products", element: <Products /> },
-      { path: "products/:id", element: <ProductDetail /> },
+      { path: "product/:id", element: <ProductDetails /> },
       { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute> },
+      { path: "checkout", element: <ProtectedRoute><Checkout /></ProtectedRoute> },
+      { path: "order-confirmation/:orderId", element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute> },
       { path: "wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
       { path: "account/*", element: <ProtectedRoute><Account /></ProtectedRoute> },
       { path: "auth", element: <Auth /> },
