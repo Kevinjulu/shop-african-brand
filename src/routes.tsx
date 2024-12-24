@@ -30,6 +30,16 @@ import { NewsletterPopup } from "./components/NewsletterPopup";
 import { Outlet } from "react-router-dom";
 import Checkout from "@/pages/Checkout";
 import OrderConfirmation from "@/pages/OrderConfirmation";
+import { VendorDashboard } from "@/pages/vendor/Dashboard";
+import { VendorLayout } from "@/components/vendor/VendorLayout";
+import VendorProducts from "@/pages/vendor/Products";
+import VendorProfile from "@/pages/vendor/Profile";
+import VendorPayouts from "@/pages/vendor/Payouts";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
+import ContentManagement from "@/pages/admin/ContentManagement";
+import VendorsPage from "@/pages/admin/vendors/VendorsPage";
+import BannersPage from "@/pages/admin/banners/BannersPage";
+import SettingsPage from "@/pages/admin/settings/SettingsPage";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
@@ -90,8 +100,31 @@ export const router = createBrowserRouter([
       { path: "terms", element: <Terms /> },
       { path: "vendor/register", element: <VendorRegister /> },
       { path: "track-order", element: <TrackOrder /> },
-      { path: "admin/*", element: <AdminRoute><Admin /></AdminRoute> },
-      { path: "*", element: <NotFound /> }
     ],
+  },
+  {
+    path: "/admin",
+    element: <AdminRoute><AdminLayout /></AdminRoute>,
+    children: [
+      { index: true, element: <Admin /> },
+      { path: "content/*", element: <ContentManagement /> },
+      { path: "vendors", element: <VendorsPage /> },
+      { path: "banners", element: <BannersPage /> },
+      { path: "settings", element: <SettingsPage /> },
+    ],
+  },
+  {
+    path: "/vendor",
+    element: <ProtectedRoute><VendorLayout /></ProtectedRoute>,
+    children: [
+      { index: true, element: <VendorDashboard /> },
+      { path: "products", element: <VendorProducts /> },
+      { path: "profile", element: <VendorProfile /> },
+      { path: "payouts", element: <VendorPayouts /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
