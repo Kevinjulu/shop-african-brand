@@ -1610,8 +1610,10 @@ export type Database = {
         Row: {
           business_address: string | null
           business_category: string | null
+          business_hours: Json | null
           business_name: string
           business_registration_number: string | null
+          business_type: string | null
           commission_rate: number | null
           contact_email: string | null
           contact_phone: string | null
@@ -1621,19 +1623,26 @@ export type Database = {
           featured: boolean | null
           id: string
           logo_url: string | null
+          rejection_reason: string | null
+          social_media: Json | null
           specialties: string[] | null
           status: string
           suspension_reason: string | null
+          tax_id: string | null
           updated_at: string
           user_id: string | null
           verification_date: string | null
+          verification_documents: Json | null
           verification_status: string | null
+          website_url: string | null
         }
         Insert: {
           business_address?: string | null
           business_category?: string | null
+          business_hours?: Json | null
           business_name: string
           business_registration_number?: string | null
+          business_type?: string | null
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -1643,19 +1652,26 @@ export type Database = {
           featured?: boolean | null
           id?: string
           logo_url?: string | null
+          rejection_reason?: string | null
+          social_media?: Json | null
           specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
+          tax_id?: string | null
           updated_at?: string
           user_id?: string | null
           verification_date?: string | null
+          verification_documents?: Json | null
           verification_status?: string | null
+          website_url?: string | null
         }
         Update: {
           business_address?: string | null
           business_category?: string | null
+          business_hours?: Json | null
           business_name?: string
           business_registration_number?: string | null
+          business_type?: string | null
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -1665,13 +1681,18 @@ export type Database = {
           featured?: boolean | null
           id?: string
           logo_url?: string | null
+          rejection_reason?: string | null
+          social_media?: Json | null
           specialties?: string[] | null
           status?: string
           suspension_reason?: string | null
+          tax_id?: string | null
           updated_at?: string
           user_id?: string | null
           verification_date?: string | null
+          verification_documents?: Json | null
           verification_status?: string | null
+          website_url?: string | null
         }
         Relationships: [
           {
