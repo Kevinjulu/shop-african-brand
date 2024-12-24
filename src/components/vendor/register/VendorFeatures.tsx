@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, ShieldCheck, ChartBar, DollarSign } from "lucide-react";
+import { Building2, ShieldCheck, BarChart, DollarSign } from "lucide-react";
 
 const features = [
   {
@@ -13,7 +13,7 @@ const features = [
     description: "Advanced security measures to protect your business"
   },
   {
-    icon: <ChartBar className="w-12 h-12 text-primary mb-4" />,
+    icon: <BarChart className="w-12 h-12 text-primary mb-4" />,
     title: "Analytics Dashboard",
     description: "Track your performance and growth"
   },

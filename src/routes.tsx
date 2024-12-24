@@ -20,7 +20,6 @@ import Terms from "@/pages/Terms";
 import VendorRegister from "@/pages/VendorRegister";
 import TrackOrder from "@/pages/TrackOrder";
 import Admin from "@/pages/Admin";
-import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
@@ -28,6 +27,7 @@ import { AuthProvider } from "./components/AuthProvider";
 import { CartProvider } from "./contexts/CartContext";
 import { Preloader } from "./components/Preloader";
 import { NewsletterPopup } from "./components/NewsletterPopup";
+import { Outlet } from "react-router-dom";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
