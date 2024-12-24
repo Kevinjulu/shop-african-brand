@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <ErrorFallback />,
+    errorElement: <ErrorFallback error={new Error("Page not found")} />,
     children: [
       { index: true, element: <Home /> },
       { path: "products", element: <Products /> },
