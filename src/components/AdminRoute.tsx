@@ -9,12 +9,15 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, loading: adminLoading } = useAdmin();
   const location = useLocation();
 
-  console.log("AdminRoute - Auth State:", { 
+  console.log("AdminRoute - Full Auth State:", { 
+    user,
     userEmail: user?.email, 
     authLoading, 
     isAdmin, 
     adminLoading,
-    currentPath: location.pathname
+    currentPath: location.pathname,
+    userMetadata: user?.user_metadata,
+    userRole: user?.role
   });
 
   // Show loading state only during initial auth/admin check
@@ -36,8 +39,12 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   // If authenticated but not admin, redirect to home
   if (!isAdmin) {
-    console.log("AdminRoute - User not admin, redirecting to home");
-    toast.error("You don't have permission to access admin features");
+    console.error("AdminRoute - Access denied:", {
+      userEmail: user.email,
+      isAdmin,
+      currentPath: location.pathname
+    });
+    toast.error("You don't have permission to access admin features. Please contact support if this is an error.");
     return <Navigate to="/" replace />;
   }
 

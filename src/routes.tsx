@@ -121,11 +121,28 @@ export const router = createBrowserRouter([
   {
     path: "/admin/*",
     element: (
-      <AdminRoute>
-        <AdminLayout>
-          <Outlet />
-        </AdminLayout>
-      </AdminRoute>
+      <ErrorBoundary
+        FallbackComponent={({ error }) => (
+          <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Admin Access Error</h2>
+              <p className="text-gray-600 mb-4">{error.message}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
+      >
+        <AdminRoute>
+          <AdminLayout>
+            <Outlet />
+          </AdminLayout>
+        </AdminRoute>
+      </ErrorBoundary>
     ),
     children: [
       { index: true, element: <Admin /> },

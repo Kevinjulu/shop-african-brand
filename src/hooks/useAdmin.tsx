@@ -17,7 +17,12 @@ export const useAdmin = () => {
       }
 
       try {
-        console.log("Checking admin status for user:", user.email);
+        console.log("Checking admin status for user:", {
+          email: user.email,
+          id: user.id,
+          metadata: user.user_metadata
+        });
+
         const { data, error } = await supabase
           .from('admin_profiles')
           .select('is_admin')
@@ -26,14 +31,18 @@ export const useAdmin = () => {
 
         if (error) {
           console.error('Error checking admin status:', error);
-          toast.error('Error verifying admin status');
+          toast.error('Error verifying admin status. Please try again.');
           setIsAdmin(false);
         } else {
-          console.log("Admin check result:", data);
+          console.log("Admin check result:", {
+            data,
+            isAdmin: data?.is_admin || false,
+            userId: user.id
+          });
           setIsAdmin(data?.is_admin || false);
         }
       } catch (error) {
-        console.error('Error checking admin status:', error);
+        console.error('Error in admin check:', error);
         toast.error('Error checking admin permissions');
         setIsAdmin(false);
       } finally {

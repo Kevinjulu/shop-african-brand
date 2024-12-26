@@ -9,10 +9,12 @@
 # Ensure API routes are handled properly
 /api/* /api/:splat 200
 
+# Ensure admin routes are handled properly
+/admin/* /index.html 200
+
 # Ensure product routes are handled properly
 /products/* /index.html 200
 /product/* /index.html 200
 
-# Handle admin and vendor routes
-/admin/* /index.html 200
+# Handle vendor routes
 /vendor/* /index.html 200
