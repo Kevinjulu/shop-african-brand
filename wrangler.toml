@@ -7,3 +7,29 @@ pages_build_output_dir = "dist"
 
 [site]
 bucket = "./dist"
+
+# Security configurations
+[security]
+headers = true
+https_only = true
+
+# DDoS protection settings
+[security.ddos]
+rate_limit = true
+rate_limit_status = 429
+rate_limit_requests = 100
+rate_limit_period = "1m"
+
+# Cache settings for better performance and security
+[cache]
+browser_ttl = 14400
+edge_ttl = 14400
+serve_stale = true
+
+# Custom headers for additional security
+[[headers]]
+for = "/*"
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
