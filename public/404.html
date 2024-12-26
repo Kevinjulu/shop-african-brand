@@ -4,16 +4,35 @@
     <meta charset="utf-8">
     <title>Shop African Brand</title>
     <script type="text/javascript">
-      var pathSegmentsToKeep = 1;
-
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      (function(l) {
+        // Decode the URL first to handle any existing encoding
+        const decodedUrl = decodeURIComponent(l.pathname + l.search + l.hash);
+        
+        // Clean up any existing ~and~ segments
+        const cleanUrl = decodedUrl.replace(/~and~/g, '&');
+        
+        // Extract the path segments we want to keep
+        const segments = cleanUrl.split('/').filter(Boolean);
+        const pathSegmentsToKeep = 1;
+        
+        // Reconstruct the URL properly
+        const newPath = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + 
+          '/?/' + segments.slice(pathSegmentsToKeep).join('/');
+        
+        // Add any query parameters, properly encoded
+        const queryString = l.search ? 
+          ('&' + l.search.slice(1).replace(/&/g, '~and~')) : '';
+        
+        // Add any hash
+        const hashString = l.hash || '';
+        
+        // Combine everything and redirect
+        l.replace(
+          l.protocol + '//' + l.hostname + 
+          (l.port ? ':' + l.port : '') + 
+          newPath + queryString + hashString
+        );
+      }(window.location))
     </script>
   </head>
   <body>
