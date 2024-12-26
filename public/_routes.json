@@ -9,5 +9,11 @@
     "/*.gif",
     "/*.ico",
     "/*.svg"
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

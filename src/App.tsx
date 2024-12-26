@@ -2,12 +2,8 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { Toaster } from "@/components/ui/sonner";
-import { CartProvider } from "./contexts/CartContext";
-import { router } from "./routes";
 import { ErrorBoundary } from "react-error-boundary";
-import { Preloader } from "./components/Preloader";
-import { NewsletterPopup } from "./components/NewsletterPopup";
-import { AuthProvider } from "./components/AuthProvider";
+import { router } from "./routes";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Application error:", error);
@@ -28,7 +24,7 @@ function ErrorFallback({ error }: { error: Error }) {
 }
 
 function App() {
-  console.log("App component rendering");
+  console.log("App component rendering, pathname:", window.location.pathname);
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>

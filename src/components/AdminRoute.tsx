@@ -19,6 +19,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   // Show loading state only during initial auth/admin check
   if (authLoading || adminLoading) {
+    console.log("AdminRoute - Loading state");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />

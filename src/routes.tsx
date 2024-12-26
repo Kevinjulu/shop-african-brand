@@ -60,6 +60,7 @@ function ErrorFallback({ error }: { error: Error }) {
 }
 
 const RootLayout = () => {
+  console.log("RootLayout rendering, pathname:", window.location.pathname);
   return (
     <AuthProvider>
       <CartProvider>
@@ -82,11 +83,26 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "products", element: <Products /> },
       { path: "product/:id", element: <ProductDetails /> },
-      { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute> },
-      { path: "checkout", element: <ProtectedRoute><Checkout /></ProtectedRoute> },
-      { path: "order-confirmation/:orderId", element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute> },
-      { path: "wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
-      { path: "account/*", element: <ProtectedRoute><Account /></ProtectedRoute> },
+      { 
+        path: "cart", 
+        element: <ProtectedRoute><Cart /></ProtectedRoute>,
+      },
+      { 
+        path: "checkout", 
+        element: <ProtectedRoute><Checkout /></ProtectedRoute>,
+      },
+      { 
+        path: "order-confirmation/:orderId", 
+        element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute>,
+      },
+      { 
+        path: "wishlist", 
+        element: <ProtectedRoute><Wishlist /></ProtectedRoute>,
+      },
+      { 
+        path: "account/*", 
+        element: <ProtectedRoute><Account /></ProtectedRoute>,
+      },
       { path: "auth", element: <Auth /> },
       { path: "auth/reset-password", element: <Auth /> },
       { path: "stores", element: <Stores /> },
@@ -103,8 +119,14 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin",
-    element: <AdminRoute><AdminLayout /></AdminRoute>,
+    path: "/admin/*",
+    element: (
+      <AdminRoute>
+        <AdminLayout>
+          <Outlet />
+        </AdminLayout>
+      </AdminRoute>
+    ),
     children: [
       { index: true, element: <Admin /> },
       { path: "content/*", element: <ContentManagement /> },
@@ -114,8 +136,14 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/vendor",
-    element: <ProtectedRoute><VendorLayout /></ProtectedRoute>,
+    path: "/vendor/*",
+    element: (
+      <ProtectedRoute>
+        <VendorLayout>
+          <Outlet />
+        </VendorLayout>
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <VendorDashboard /> },
       { path: "products", element: <VendorProducts /> },
