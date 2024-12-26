@@ -10,7 +10,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const from = (location.state as any)?.from?.pathname || '/';
+  const from = (location.state as any)?.from || '/';
   const isResetPassword = location.pathname === '/auth/reset-password';
 
   console.log("Auth page: Current location state:", location.state);
@@ -52,17 +52,6 @@ const AuthPage = () => {
       
       if (event === 'SIGNED_IN' && session) {
         try {
-          // Check if user is admin
-          const { data: adminData, error: adminError } = await supabase
-            .from('admin_profiles')
-            .select('is_admin')
-            .eq('id', session.user.id)
-            .single();
-
-          if (adminError) {
-            console.error("Error checking admin status:", adminError);
-          }
-
           // Create profile if it doesn't exist
           const { error: profileError } = await supabase
             .from('profiles')
@@ -76,7 +65,13 @@ const AuthPage = () => {
             console.error("Error updating profile:", profileError);
           }
 
-          // Redirect based on user role
+          // Check if user is admin
+          const { data: adminData } = await supabase
+            .from('admin_profiles')
+            .select('is_admin')
+            .eq('id', session.user.id)
+            .single();
+
           if (adminData?.is_admin) {
             console.log("Admin user detected, redirecting to admin dashboard");
             navigate("/admin");
@@ -89,7 +84,6 @@ const AuthPage = () => {
         } catch (error) {
           console.error("Error in auth flow:", error);
           toast.error("An error occurred during sign in");
-          navigate(from);
         }
       }
     });
@@ -140,7 +134,7 @@ const AuthPage = () => {
             }}
             theme="light"
             providers={[]}
-            redirectTo={window.location.origin + '/account'}
+            redirectTo={`${window.location.origin}/account`}
             localization={{
               variables: {
                 sign_up: {
