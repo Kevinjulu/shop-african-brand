@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (signOutError) throw signOutError;
       
       console.log("AuthProvider: Sign out successful");
-      navigate('/');
+      navigate('/auth');
       toast.success("Signed out successfully");
     } catch (error) {
       console.error("AuthProvider: Sign out failed", error);

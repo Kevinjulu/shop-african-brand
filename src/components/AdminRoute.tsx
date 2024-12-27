@@ -9,15 +9,13 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, loading: adminLoading } = useAdmin();
   const location = useLocation();
 
-  console.log("AdminRoute - Full Auth State:", { 
+  console.log("AdminRoute - Auth State:", { 
     user,
     userEmail: user?.email, 
     authLoading, 
     isAdmin, 
     adminLoading,
-    currentPath: location.pathname,
-    userMetadata: user?.user_metadata,
-    userRole: user?.role
+    currentPath: location.pathname
   });
 
   // Show loading state only during initial auth/admin check
