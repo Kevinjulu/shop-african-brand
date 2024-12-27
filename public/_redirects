@@ -18,3 +18,6 @@
 
 # Handle vendor routes
 /vendor/* /index.html 200
+
+# Handle auth routes
+/auth/* /index.html 200

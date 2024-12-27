@@ -44,7 +44,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
       isAdmin,
       currentPath: location.pathname
     });
-    toast.error("You don't have permission to access admin features. Please contact support if this is an error.");
+    toast.error("You don't have permission to access admin features");
     return <Navigate to="/" replace />;
   }
 

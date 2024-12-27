@@ -83,28 +83,12 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "products", element: <Products /> },
       { path: "product/:id", element: <ProductDetails /> },
-      { 
-        path: "cart", 
-        element: <ProtectedRoute><Cart /></ProtectedRoute>,
-      },
-      { 
-        path: "checkout", 
-        element: <ProtectedRoute><Checkout /></ProtectedRoute>,
-      },
-      { 
-        path: "order-confirmation/:orderId", 
-        element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute>,
-      },
-      { 
-        path: "wishlist", 
-        element: <ProtectedRoute><Wishlist /></ProtectedRoute>,
-      },
-      { 
-        path: "account/*", 
-        element: <ProtectedRoute><Account /></ProtectedRoute>,
-      },
-      { path: "auth", element: <Auth /> },
-      { path: "auth/reset-password", element: <Auth /> },
+      { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute> },
+      { path: "checkout", element: <ProtectedRoute><Checkout /></ProtectedRoute> },
+      { path: "order-confirmation/:orderId", element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute> },
+      { path: "wishlist", element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+      { path: "account/*", element: <ProtectedRoute><Account /></ProtectedRoute> },
+      { path: "auth/*", element: <Auth /> },
       { path: "stores", element: <Stores /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
@@ -119,24 +103,9 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin/*",
+    path: "admin/*",
     element: (
-      <ErrorBoundary
-        FallbackComponent={({ error }) => (
-          <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Admin Access Error</h2>
-              <p className="text-gray-600 mb-4">{error.message}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
-              >
-                Try again
-              </button>
-            </div>
-          </div>
-        )}
-      >
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <AdminRoute>
           <AdminLayout>
             <Outlet />
@@ -153,7 +122,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/vendor/*",
+    path: "vendor/*",
     element: (
       <ProtectedRoute>
         <VendorLayout>

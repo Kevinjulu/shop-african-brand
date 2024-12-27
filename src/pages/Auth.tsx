@@ -11,7 +11,6 @@ const AuthPage = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const from = (location.state as any)?.from || '/';
-  const isResetPassword = location.pathname === '/auth/reset-password';
 
   console.log("Auth page: Current location state:", location.state);
   console.log("Auth page: Redirecting to:", from);
@@ -105,16 +104,14 @@ const AuthPage = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          {isResetPassword ? 'Reset your password' : 'Sign in to your account'}
+          Sign in to your account
         </h2>
-        {!isResetPassword && (
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <span className="font-medium text-primary hover:text-primary/90">
-              create a new account
-            </span>
-          </p>
-        )}
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Or{' '}
+          <span className="font-medium text-primary hover:text-primary/90">
+            create a new account
+          </span>
+        </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -135,20 +132,6 @@ const AuthPage = () => {
             theme="light"
             providers={[]}
             redirectTo={`${window.location.origin}/account`}
-            localization={{
-              variables: {
-                sign_up: {
-                  password_label: 'Password (min 8 characters, include numbers and special characters)',
-                  email_label: 'Email address',
-                  button_label: 'Create account',
-                },
-                sign_in: {
-                  password_label: 'Your password',
-                  email_label: 'Your email address',
-                  button_label: 'Sign in',
-                }
-              }
-            }}
           />
         </div>
       </div>
