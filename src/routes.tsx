@@ -41,6 +41,7 @@ import VendorsPage from "@/pages/admin/vendors/VendorsPage";
 import BannersPage from "@/pages/admin/banners/BannersPage";
 import SettingsPage from "@/pages/admin/settings/SettingsPage";
 import Dashboard from "@/pages/admin/Dashboard";
+import AnalyticsDashboard from "@/pages/admin/analytics/AnalyticsDashboard";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
@@ -116,6 +117,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Dashboard /> },
+      { path: "analytics", element: <AnalyticsDashboard /> },
       { path: "content/*", element: <ContentManagement /> },
       { path: "vendors", element: <VendorsPage /> },
       { path: "banners", element: <BannersPage /> },
