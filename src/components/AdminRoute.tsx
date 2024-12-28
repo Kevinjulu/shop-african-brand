@@ -10,7 +10,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   console.log("AdminRoute - Auth State:", { 
-    user,
+    isAuthenticated: !!user,
     userEmail: user?.email, 
     authLoading, 
     isAdmin, 

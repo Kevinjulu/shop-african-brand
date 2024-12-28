@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import { toast } from "sonner";
 
 export const useAdmin = () => {
   const { user } = useAuth();
@@ -17,12 +16,7 @@ export const useAdmin = () => {
       }
 
       try {
-        console.log("Checking admin status for user:", {
-          email: user.email,
-          id: user.id,
-          metadata: user.user_metadata
-        });
-
+        console.log("Checking admin status for user:", user.email);
         const { data, error } = await supabase
           .from('admin_profiles')
           .select('is_admin')
@@ -30,20 +24,14 @@ export const useAdmin = () => {
           .single();
 
         if (error) {
-          console.error('Error checking admin status:', error);
-          toast.error('Error verifying admin status. Please try again.');
+          console.error("Error checking admin status:", error);
           setIsAdmin(false);
         } else {
-          console.log("Admin check result:", {
-            data,
-            isAdmin: data?.is_admin || false,
-            userId: user.id
-          });
+          console.log("Admin check result:", data);
           setIsAdmin(data?.is_admin || false);
         }
       } catch (error) {
-        console.error('Error in admin check:', error);
-        toast.error('Error checking admin permissions');
+        console.error("Error in admin check:", error);
         setIsAdmin(false);
       } finally {
         setLoading(false);
