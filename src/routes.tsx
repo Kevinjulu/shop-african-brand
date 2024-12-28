@@ -40,6 +40,7 @@ import ContentManagement from "@/pages/admin/ContentManagement";
 import VendorsPage from "@/pages/admin/vendors/VendorsPage";
 import BannersPage from "@/pages/admin/banners/BannersPage";
 import SettingsPage from "@/pages/admin/settings/SettingsPage";
+import Dashboard from "@/pages/admin/Dashboard";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Router error:", error);
@@ -103,7 +104,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "admin/*",
+    path: "admin",
     element: (
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <AdminRoute>
@@ -114,7 +115,7 @@ export const router = createBrowserRouter([
       </ErrorBoundary>
     ),
     children: [
-      { index: true, element: <Admin /> },
+      { index: true, element: <Dashboard /> },
       { path: "content/*", element: <ContentManagement /> },
       { path: "vendors", element: <VendorsPage /> },
       { path: "banners", element: <BannersPage /> },
@@ -122,7 +123,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "vendor/*",
+    path: "vendor",
     element: (
       <ProtectedRoute>
         <VendorLayout>
