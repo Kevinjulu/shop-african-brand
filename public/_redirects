@@ -1,23 +1,16 @@
 /* /index.html 200
 
-# Redirect all routes to index.html for client-side routing
+# Handle all routes for client-side routing
 /* /index.html 200
 
-# Handle 404s
-/404 /index.html 200
-
-# Ensure API routes are handled properly
+# Handle API routes
 /api/* /api/:splat 200
 
-# Ensure admin routes are handled properly
+# Handle specific routes
+/auth/* /index.html 200
 /admin/* /index.html 200
-
-# Ensure product routes are handled properly
-/products/* /index.html 200
-/product/* /index.html 200
-
-# Handle vendor routes
+/account/* /index.html 200
 /vendor/* /index.html 200
 
-# Handle auth routes
-/auth/* /index.html 200
+# Handle static assets
+/assets/* /assets/:splat 200
