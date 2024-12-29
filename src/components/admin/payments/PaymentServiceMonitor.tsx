@@ -1,127 +1,72 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Activity, AlertCircle } from "lucide-react";
-import { paymentService } from "@/services/payments/PaymentMicroservice";
-import { currencyService } from "@/services/currency/CurrencyMicroservice";
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { PaymentMicroservice } from "@/services/payments/PaymentMicroservice";
+import { CurrencyMicroservice } from "@/services/currency/CurrencyMicroservice";
+
+interface ServiceMetrics {
+  status: string;
+  response_time_ms: number;
+  error_count: number;
+  timestamp: string;
+}
 
 export const PaymentServiceMonitor = () => {
-  const { data: metrics, isLoading } = useQuery({
-    queryKey: ['payment-service-metrics'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('payment_service_metrics')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(10);
-      
-      if (error) throw error;
-      return data;
-    },
-    refetchInterval: 30000 // Refresh every 30 seconds
-  });
+  const [paymentMetrics, setPaymentMetrics] = useState<ServiceMetrics | null>(null);
+  const paymentService = PaymentMicroservice.getInstance();
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      const metrics = await paymentService.getServiceHealth();
+      setPaymentMetrics(metrics);
+    };
+
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'operational':
-        return 'bg-green-500';
+        return 'text-green-500';
       case 'degraded':
-        return 'bg-yellow-500';
+        return 'text-yellow-500';
+      case 'down':
+        return 'text-red-500';
       default:
-        return 'bg-red-500';
+        return 'text-gray-500';
     }
   };
 
-  if (isLoading) {
-    return <div>Loading service metrics...</div>;
-  }
-
-  const latestMetric = metrics?.[0];
-  const paymentStatus = paymentService.getServiceStatus();
-
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">
-              Payment Service Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4">
-              <Badge className={getStatusColor(paymentStatus)}>
-                {paymentStatus}
-              </Badge>
-              <div className="text-sm text-gray-500">
-                Last updated: {latestMetric?.timestamp ? new Date(latestMetric.timestamp).toLocaleString() : 'N/A'}
-              </div>
-            </div>
-            
-            {latestMetric && (
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span>Response Time</span>
-                  <span>{latestMetric.response_time_ms}ms</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Success Rate</span>
-                  <span>{latestMetric.success_rate}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Total Transactions</span>
-                  <span>{latestMetric.total_transactions}</span>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <div className="grid gap-4 md:grid-cols-2">
+      <Card className="p-4">
+        <h3 className="font-semibold mb-2">Payment Service Status</h3>
+        {paymentMetrics ? (
+          <div className="space-y-2">
+            <p className={`font-medium ${getStatusColor(paymentMetrics.status)}`}>
+              Status: {paymentMetrics.status}
+            </p>
+            <p>Response Time: {paymentMetrics.response_time_ms}ms</p>
+            <p>Error Count: {paymentMetrics.error_count}</p>
+            <p className="text-sm text-gray-500">
+              Last Updated: {new Date(paymentMetrics.timestamp).toLocaleString()}
+            </p>
+          </div>
+        ) : (
+          <p>Loading metrics...</p>
+        )}
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">
-              Currency Service Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Activity className="w-4 h-4 text-green-500" />
-                <span>Operational</span>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="text-sm text-gray-500">
-                  Exchange Rates Last Updated:
-                </div>
-                <div>
-                  {Object.entries(CURRENCIES).map(([country, currency]) => {
-                    const lastUpdate = currencyService.getLastUpdate(currency.code);
-                    return (
-                      <div key={country} className="flex justify-between text-sm">
-                        <span>{currency.code}</span>
-                        <span>{lastUpdate?.toLocaleString() || 'N/A'}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {paymentStatus !== 'operational' && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Service Degraded</AlertTitle>
-          <AlertDescription>
-            The payment service is currently experiencing issues. Our team has been notified.
-          </AlertDescription>
-        </Alert>
-      )}
+      <Card className="p-4">
+        <h3 className="font-semibold mb-2">Currency Service Status</h3>
+        <div className="space-y-2">
+          <p className="text-green-500 font-medium">Status: Operational</p>
+          <p>Supported Currencies: USD, EUR, GBP, KES</p>
+          <p>Auto-updates: Every 24 hours</p>
+        </div>
+      </Card>
     </div>
   );
 };

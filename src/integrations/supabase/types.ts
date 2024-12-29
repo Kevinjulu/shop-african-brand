@@ -903,6 +903,48 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_service_metrics: {
+        Row: {
+          currency: string
+          error_count: number | null
+          id: string
+          metadata: Json | null
+          response_time_ms: number | null
+          service_name: string
+          status: string
+          success_rate: number | null
+          timestamp: string | null
+          total_amount: number | null
+          total_transactions: number | null
+        }
+        Insert: {
+          currency: string
+          error_count?: number | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name: string
+          status?: string
+          success_rate?: number | null
+          timestamp?: string | null
+          total_amount?: number | null
+          total_transactions?: number | null
+        }
+        Update: {
+          currency?: string
+          error_count?: number | null
+          id?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          service_name?: string
+          status?: string
+          success_rate?: number | null
+          timestamp?: string | null
+          total_amount?: number | null
+          total_transactions?: number | null
+        }
+        Relationships: []
+      }
       payment_transactions: {
         Row: {
           amount: number

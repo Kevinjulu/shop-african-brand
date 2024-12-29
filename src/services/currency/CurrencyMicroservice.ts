@@ -1,21 +1,12 @@
-import { CURRENCIES } from "@/utils/currency";
+import { supabase } from "@/integrations/supabase/client";
 
-interface ExchangeRate {
-  from: string;
-  to: string;
-  rate: number;
-  lastUpdated: Date;
-}
-
-class CurrencyMicroservice {
+export class CurrencyMicroservice {
   private static instance: CurrencyMicroservice;
-  private exchangeRates: Map<string, ExchangeRate> = new Map();
-  private updateInterval: number = 3600000; // 1 hour
+  private exchangeRates: Record<string, number> = {};
+  private lastUpdate: Date = new Date();
 
   private constructor() {
-    console.log('Initializing Currency Microservice');
-    this.initializeRates();
-    this.startRateUpdates();
+    this.initializeExchangeRates();
   }
 
   public static getInstance(): CurrencyMicroservice {
@@ -25,71 +16,81 @@ class CurrencyMicroservice {
     return CurrencyMicroservice.instance;
   }
 
-  private initializeRates(): void {
-    Object.entries(CURRENCIES).forEach(([country, currency]) => {
-      const key = `USD-${currency.code}`;
-      this.exchangeRates.set(key, {
-        from: 'USD',
-        to: currency.code,
-        rate: currency.rate,
-        lastUpdated: new Date()
-      });
-    });
-  }
-
-  private startRateUpdates(): void {
-    setInterval(() => {
-      this.updateRates();
-    }, this.updateInterval);
-  }
-
-  private async updateRates(): Promise<void> {
-    console.log('Updating currency exchange rates');
-    try {
-      // In a real implementation, this would fetch from an exchange rate API
-      // For now, we'll just update the timestamp
-      this.exchangeRates.forEach((rate, key) => {
-        this.exchangeRates.set(key, {
-          ...rate,
-          lastUpdated: new Date()
-        });
-      });
-    } catch (error) {
-      console.error('Failed to update exchange rates:', error);
-    }
-  }
-
-  public convert(amount: number, fromCurrency: string, toCurrency: string): number {
-    console.log(`Converting ${amount} from ${fromCurrency} to ${toCurrency}`);
+  private async initializeExchangeRates() {
+    // Initialize with some default rates
+    this.exchangeRates = {
+      USD: 1,
+      EUR: 0.85,
+      GBP: 0.73,
+      KES: 108.5,
+    };
     
-    if (fromCurrency === toCurrency) {
-      return amount;
+    console.log("CurrencyMicroservice: Exchange rates initialized", this.exchangeRates);
+  }
+
+  async convertAmount(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
+    console.log("CurrencyMicroservice: Converting currency", { amount, fromCurrency, toCurrency });
+    
+    try {
+      const startTime = performance.now();
+      
+      if (fromCurrency === toCurrency) return amount;
+
+      const fromRate = this.exchangeRates[fromCurrency];
+      const toRate = this.exchangeRates[toCurrency];
+
+      if (!fromRate || !toRate) {
+        throw new Error(`Exchange rate not found for ${fromCurrency} or ${toCurrency}`);
+      }
+
+      const convertedAmount = (amount / fromRate) * toRate;
+      
+      const endTime = performance.now();
+      await this.logMetrics('currency_conversion', Math.round(endTime - startTime));
+
+      console.log("CurrencyMicroservice: Conversion successful", { 
+        original: amount, 
+        converted: convertedAmount 
+      });
+      
+      return Number(convertedAmount.toFixed(2));
+    } catch (error) {
+      console.error("CurrencyMicroservice: Conversion failed", error);
+      await this.logError('currency_conversion', error);
+      throw error;
     }
+  }
 
-    const key = `USD-${toCurrency}`;
-    const rate = this.exchangeRates.get(key);
-
-    if (!rate) {
-      console.error(`Exchange rate not found for ${fromCurrency} to ${toCurrency}`);
-      return amount;
+  private async logMetrics(operation: string, responseTime: number) {
+    try {
+      await supabase
+        .from('payment_service_metrics')
+        .insert({
+          service_name: 'currency_service',
+          response_time_ms: responseTime,
+          status: 'operational',
+        });
+    } catch (error) {
+      console.error("Failed to log currency metrics:", error);
     }
-
-    return amount * rate.rate;
   }
 
-  public getExchangeRate(fromCurrency: string, toCurrency: string): number {
-    const key = `USD-${toCurrency}`;
-    return this.exchangeRates.get(key)?.rate || 1;
+  private async logError(operation: string, error: any) {
+    try {
+      await supabase
+        .from('payment_service_metrics')
+        .insert({
+          service_name: 'currency_service',
+          status: 'error',
+          error_count: 1,
+          metadata: { operation, error: error.message },
+        });
+    } catch (err) {
+      console.error("Failed to log currency error:", err);
+    }
   }
 
-  public getAllRates(): Map<string, ExchangeRate> {
-    return new Map(this.exchangeRates);
-  }
-
-  public getLastUpdate(currency: string): Date | null {
-    const key = `USD-${currency}`;
-    return this.exchangeRates.get(key)?.lastUpdated || null;
+  async getExchangeRates() {
+    return this.exchangeRates;
   }
 }
-
-export const currencyService = CurrencyMicroservice.getInstance();
