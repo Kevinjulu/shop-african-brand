@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CURRENCIES, formatCurrencyValue } from '@/utils/currency';
+import { currencyService } from '@/services/currency/CurrencyMicroservice';
+import { CURRENCIES } from '@/utils/currency';
 
 interface Currency {
   code: string;
@@ -40,7 +41,6 @@ export const useCurrency = () => {
   const formatPrice = (price: number, originCountry?: string) => {
     const originalCurrency = CURRENCIES[originCountry || 'US'];
     
-    // If no origin country or same as user currency, just format with user currency
     if (!originCountry || originCountry === userCurrency.code) {
       return (
         <span className="text-base font-bold text-primary">
@@ -49,9 +49,7 @@ export const useCurrency = () => {
       );
     }
 
-    // Convert price to user currency
-    const usdPrice = price / originalCurrency.rate;
-    const convertedPrice = usdPrice * userCurrency.rate;
+    const convertedPrice = currencyService.convert(price, originalCurrency.code, userCurrency.code);
     
     return (
       <div className="space-y-0.5">
@@ -65,28 +63,23 @@ export const useCurrency = () => {
     );
   };
 
-  const formatPriceOnly = (price: number, originCountry?: string) => {
-    const currency = CURRENCIES[originCountry || userCurrency.code] || userCurrency;
-    return formatCurrencyValue(price, currency);
+  const formatCurrencyValue = (price: number, currency: Currency): string => {
+    const formattedNumber = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+    
+    return `${currency.symbol} ${formattedNumber}`;
   };
 
-  const convertPrice = (price: number, fromCountry: string, toCountry: string) => {
-    const fromCurrency = CURRENCIES[fromCountry];
-    const toCurrency = CURRENCIES[toCountry];
-    
-    if (!fromCurrency || !toCurrency) {
-      console.error('Invalid currency conversion');
-      return price;
-    }
-
-    const usdPrice = price / fromCurrency.rate;
-    return usdPrice * toCurrency.rate;
+  const convertPrice = (price: number, fromCurrency: string, toCurrency: string): number => {
+    return currencyService.convert(price, fromCurrency, toCurrency);
   };
 
   return {
     currency: userCurrency,
     formatPrice,
-    formatPriceOnly,
+    formatCurrencyValue,
     convertPrice,
   };
 };
