@@ -1,11 +1,22 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface ServiceMetrics {
+  status: 'operational' | 'degraded' | 'down';
+  response_time_ms: number;
+  error_count: number;
+  timestamp: string;
+}
+
 export class PaymentMicroservice {
   private static instance: PaymentMicroservice;
   private serviceStatus: 'operational' | 'degraded' | 'down' = 'operational';
+  private errorCount: number = 0;
+  private lastHealthCheck: Date = new Date();
 
-  private constructor() {}
+  private constructor() {
+    this.initializeHealthCheck();
+  }
 
   public static getInstance(): PaymentMicroservice {
     if (!PaymentMicroservice.instance) {
@@ -14,13 +25,27 @@ export class PaymentMicroservice {
     return PaymentMicroservice.instance;
   }
 
+  private async initializeHealthCheck() {
+    console.log("PaymentMicroservice: Initializing health check");
+    try {
+      await this.updateServiceMetrics({
+        status: 'operational',
+        response_time_ms: 0,
+        error_count: 0,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Failed to initialize health check:", error);
+    }
+  }
+
   async processPayment(amount: number, currency: string, orderId: string) {
     try {
       console.log("PaymentMicroservice: Processing payment", { amount, currency, orderId });
       
       const startTime = performance.now();
       
-      // Process payment logic here
+      // Process payment logic
       const { data, error } = await supabase
         .from('payment_transactions')
         .insert({
@@ -37,30 +62,39 @@ export class PaymentMicroservice {
       const endTime = performance.now();
       const responseTime = Math.round(endTime - startTime);
 
-      // Log metrics
-      await this.logMetrics('payment_processing', responseTime);
+      // Log successful transaction metrics
+      await this.updateServiceMetrics({
+        status: this.serviceStatus,
+        response_time_ms: responseTime,
+        error_count: this.errorCount,
+        timestamp: new Date().toISOString()
+      });
 
       console.log("PaymentMicroservice: Payment processed successfully", data);
       return data;
     } catch (error) {
       console.error("PaymentMicroservice: Payment processing failed", error);
-      this.serviceStatus = 'degraded';
+      this.errorCount++;
+      this.serviceStatus = this.errorCount > 5 ? 'down' : 'degraded';
+      
       await this.logError('payment_processing', error);
       throw error;
     }
   }
 
-  private async logMetrics(operation: string, responseTime: number) {
+  private async updateServiceMetrics(metrics: ServiceMetrics) {
     try {
       await supabase
         .from('payment_service_metrics')
         .insert({
           service_name: 'payment_processor',
-          response_time_ms: responseTime,
-          status: this.serviceStatus,
+          status: metrics.status,
+          response_time_ms: metrics.response_time_ms,
+          error_count: metrics.error_count,
+          timestamp: metrics.timestamp
         });
     } catch (error) {
-      console.error("Failed to log payment metrics:", error);
+      console.error("Failed to update service metrics:", error);
     }
   }
 
@@ -71,7 +105,7 @@ export class PaymentMicroservice {
         .insert({
           service_name: 'payment_processor',
           status: 'error',
-          error_count: 1,
+          error_count: this.errorCount,
           metadata: { operation, error: error.message },
         });
     } catch (err) {
@@ -79,7 +113,7 @@ export class PaymentMicroservice {
     }
   }
 
-  async getServiceHealth() {
+  async getServiceHealth(): Promise<ServiceMetrics | null> {
     try {
       const { data, error } = await supabase
         .from('payment_service_metrics')
@@ -94,5 +128,16 @@ export class PaymentMicroservice {
       console.error("Failed to get service health:", error);
       return null;
     }
+  }
+
+  async resetErrorCount() {
+    this.errorCount = 0;
+    this.serviceStatus = 'operational';
+    await this.updateServiceMetrics({
+      status: this.serviceStatus,
+      response_time_ms: 0,
+      error_count: 0,
+      timestamp: new Date().toISOString()
+    });
   }
 }

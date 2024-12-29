@@ -1,12 +1,27 @@
 import { supabase } from "@/integrations/supabase/client";
 
+interface ExchangeRates {
+  [key: string]: number;
+}
+
+interface CurrencyMetrics {
+  service_name: string;
+  status: string;
+  response_time_ms: number;
+  error_count: number;
+  timestamp: string;
+}
+
 export class CurrencyMicroservice {
   private static instance: CurrencyMicroservice;
-  private exchangeRates: Record<string, number> = {};
+  private exchangeRates: ExchangeRates = {};
   private lastUpdate: Date = new Date();
+  private updateInterval: number = 3600000; // 1 hour
+  private errorCount: number = 0;
 
   private constructor() {
     this.initializeExchangeRates();
+    this.startPeriodicUpdate();
   }
 
   public static getInstance(): CurrencyMicroservice {
@@ -17,18 +32,43 @@ export class CurrencyMicroservice {
   }
 
   private async initializeExchangeRates() {
-    // Initialize with some default rates
+    console.log("CurrencyMicroservice: Initializing exchange rates");
+    
+    // Initialize with default rates
     this.exchangeRates = {
       USD: 1,
       EUR: 0.85,
       GBP: 0.73,
       KES: 108.5,
+      NGN: 460.0,
+      GHS: 12.5,
+      TZS: 2500.0
     };
     
+    await this.logMetrics('initialization', 0);
     console.log("CurrencyMicroservice: Exchange rates initialized", this.exchangeRates);
   }
 
-  async convertAmount(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
+  private startPeriodicUpdate() {
+    setInterval(async () => {
+      try {
+        await this.updateExchangeRates();
+      } catch (error) {
+        console.error("Failed to update exchange rates:", error);
+        this.errorCount++;
+        await this.logError('periodic_update', error);
+      }
+    }, this.updateInterval);
+  }
+
+  private async updateExchangeRates() {
+    // In a real application, this would fetch from an external API
+    console.log("CurrencyMicroservice: Updating exchange rates");
+    this.lastUpdate = new Date();
+    await this.logMetrics('rate_update', 0);
+  }
+
+  async convert(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
     console.log("CurrencyMicroservice: Converting currency", { amount, fromCurrency, toCurrency });
     
     try {
@@ -56,6 +96,7 @@ export class CurrencyMicroservice {
       return Number(convertedAmount.toFixed(2));
     } catch (error) {
       console.error("CurrencyMicroservice: Conversion failed", error);
+      this.errorCount++;
       await this.logError('currency_conversion', error);
       throw error;
     }
@@ -63,13 +104,17 @@ export class CurrencyMicroservice {
 
   private async logMetrics(operation: string, responseTime: number) {
     try {
+      const metrics: CurrencyMetrics = {
+        service_name: 'currency_service',
+        status: this.errorCount > 5 ? 'down' : this.errorCount > 0 ? 'degraded' : 'operational',
+        response_time_ms: responseTime,
+        error_count: this.errorCount,
+        timestamp: new Date().toISOString()
+      };
+
       await supabase
         .from('payment_service_metrics')
-        .insert({
-          service_name: 'currency_service',
-          response_time_ms: responseTime,
-          status: 'operational',
-        });
+        .insert(metrics);
     } catch (error) {
       console.error("Failed to log currency metrics:", error);
     }
@@ -82,7 +127,7 @@ export class CurrencyMicroservice {
         .insert({
           service_name: 'currency_service',
           status: 'error',
-          error_count: 1,
+          error_count: this.errorCount,
           metadata: { operation, error: error.message },
         });
     } catch (err) {
@@ -90,7 +135,27 @@ export class CurrencyMicroservice {
     }
   }
 
-  async getExchangeRates() {
+  async getExchangeRates(): Promise<ExchangeRates> {
     return this.exchangeRates;
   }
+
+  async getServiceHealth(): Promise<CurrencyMetrics | null> {
+    try {
+      const { data, error } = await supabase
+        .from('payment_service_metrics')
+        .select('*')
+        .eq('service_name', 'currency_service')
+        .order('timestamp', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error("Failed to get service health:", error);
+      return null;
+    }
+  }
 }
+
+export const currencyService = CurrencyMicroservice.getInstance();
