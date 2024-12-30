@@ -24,23 +24,49 @@ export const ServiceHealthMonitor = () => {
           currencyService.getServiceHealth()
         ]);
 
+        // Prepare metrics with all required fields
+        const paymentMetricsData = {
+          service_name: 'payment_service',
+          status: payment.status || 'unknown',
+          response_time_ms: payment.response_time_ms || 0,
+          error_count: payment.error_count || 0,
+          currency: 'USD',
+          success_rate: 100,
+          total_transactions: 0,
+          total_amount: 0,
+          metadata: {}
+        };
+
+        const currencyMetricsData = {
+          service_name: 'currency_service',
+          status: currency.status || 'unknown',
+          response_time_ms: currency.response_time_ms || 0,
+          error_count: currency.error_count || 0,
+          currency: 'USD',
+          success_rate: 100,
+          total_transactions: 0,
+          total_amount: 0,
+          metadata: {}
+        };
+
+        console.log('Storing payment metrics:', paymentMetricsData);
+        console.log('Storing currency metrics:', currencyMetricsData);
+
         // Store metrics in Supabase
-        await Promise.all([
-          supabase.from('payment_service_metrics').insert({
-            service_name: 'payment_service',
-            status: payment.status,
-            response_time_ms: payment.response_time_ms,
-            error_count: payment.error_count,
-            currency: 'USD'
-          }),
-          supabase.from('payment_service_metrics').insert({
-            service_name: 'currency_service',
-            status: currency.status,
-            response_time_ms: currency.response_time_ms,
-            error_count: currency.error_count,
-            currency: 'USD'
-          })
+        const [paymentResult, currencyResult] = await Promise.all([
+          supabase.from('payment_service_metrics').insert(paymentMetricsData),
+          supabase.from('payment_service_metrics').insert(currencyMetricsData)
         ]);
+
+        if (paymentResult.error) {
+          console.error('Error storing payment metrics:', paymentResult.error);
+          throw paymentResult.error;
+        }
+
+        if (currencyResult.error) {
+          console.error('Error storing currency metrics:', currencyResult.error);
+          throw currencyResult.error;
+        }
 
         console.log('Service metrics stored successfully');
         setPaymentMetrics(payment);
