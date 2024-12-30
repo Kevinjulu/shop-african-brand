@@ -12,10 +12,9 @@ export const ServiceHealthMonitor = () => {
   });
 
   useEffect(() => {
-    const paymentService = new PaymentService();
     const fetchMetrics = async () => {
       try {
-        const serviceMetrics = await paymentService.getServiceMetrics();
+        const serviceMetrics = await PaymentService.getServiceMetrics();
         setMetrics(serviceMetrics);
       } catch (error) {
         console.error('Error fetching service metrics:', error);

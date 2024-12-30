@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TierPricing } from "@/types/product";
 import { useCurrency } from "@/hooks/useCurrency";
+import { useState, useEffect } from "react";
 
 interface TieredPricingProps {
   tiers?: TierPricing[];
@@ -8,7 +9,24 @@ interface TieredPricingProps {
 }
 
 export const TieredPricing = ({ tiers, basePrice }: TieredPricingProps) => {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, formatPriceSync } = useCurrency();
+  const [formattedPrices, setFormattedPrices] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const updatePrices = async () => {
+      const prices: Record<string, string> = {
+        base: await formatPrice(basePrice)
+      };
+
+      for (const tier of tiers || []) {
+        prices[`tier-${tier.minQuantity}`] = await formatPrice(tier.price);
+      }
+
+      setFormattedPrices(prices);
+    };
+
+    updatePrices();
+  }, [tiers, basePrice, formatPrice]);
 
   if (!tiers?.length) return null;
 
@@ -27,7 +45,7 @@ export const TieredPricing = ({ tiers, basePrice }: TieredPricingProps) => {
           <div className="space-y-2">
             <div className="grid grid-cols-3 gap-4 text-sm border-b pb-2">
               <div>1-{tiers[0].minQuantity - 1}</div>
-              <div>{formatPrice(basePrice)}</div>
+              <div>{formattedPrices.base || formatPriceSync(basePrice)}</div>
               <div>-</div>
             </div>
             {tiers.map((tier, index) => (
@@ -35,7 +53,7 @@ export const TieredPricing = ({ tiers, basePrice }: TieredPricingProps) => {
                 <div>
                   {tier.minQuantity}-{tier.maxQuantity || '∞'}
                 </div>
-                <div>{formatPrice(tier.price)}</div>
+                <div>{formattedPrices[`tier-${tier.minQuantity}`] || formatPriceSync(tier.price)}</div>
                 <div className="text-green-600">
                   {Math.round(((basePrice - tier.price) / basePrice) * 100)}% off
                 </div>

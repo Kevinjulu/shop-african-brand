@@ -1,22 +1,71 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-import { adminRoutes } from "@/routes/admin";
-import { publicRoutes } from "@/routes/public";
-import { shopRoutes } from "@/routes/shop";
-import { accountRoutes } from "@/routes/account";
-import { vendorRoutes } from "@/routes/vendor";
-import { policyRoutes } from "@/routes/policy";
+import Home from "@/pages/Home";
+import About from "@/pages/About";
+import NotFound from "@/pages/NotFound";
+import OrderHistory from "@/pages/OrderHistory";
+import VendorRegister from "@/pages/VendorRegister";
+import ShippingPolicy from "@/pages/ShippingPolicy";
+import ReturnsPolicy from "@/pages/ReturnsPolicy";
+import Stores from "@/pages/Stores";
+import Cart from "@/pages/Cart";
+import BestSellers from "@/pages/BestSellers";
+import OnSale from "@/pages/OnSale";
+import Products from "@/pages/Products";
+import Wishlist from "@/pages/Wishlist";
 
 export const router = createBrowserRouter([
   {
-    element: <Layout />,
-    children: [
-      ...(Array.isArray(publicRoutes) ? publicRoutes : [publicRoutes]),
-      ...(Array.isArray(shopRoutes) ? shopRoutes : [shopRoutes]),
-      ...(Array.isArray(accountRoutes) ? accountRoutes : [accountRoutes]),
-      ...(Array.isArray(adminRoutes) ? adminRoutes : [adminRoutes]),
-      ...(Array.isArray(vendorRoutes) ? vendorRoutes : [vendorRoutes]),
-      ...(Array.isArray(policyRoutes) ? policyRoutes : [policyRoutes])
-    ]
-  }
+    path: "/",
+    element: <Layout><Home /></Layout>,
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/about",
+    element: <Layout><About /></Layout>,
+  },
+  {
+    path: "/order-history",
+    element: <Layout><OrderHistory /></Layout>,
+  },
+  {
+    path: "/vendor/register",
+    element: <Layout><VendorRegister /></Layout>,
+  },
+  {
+    path: "/shipping-policy",
+    element: <Layout><ShippingPolicy /></Layout>,
+  },
+  {
+    path: "/returns-policy",
+    element: <Layout><ReturnsPolicy /></Layout>,
+  },
+  {
+    path: "/stores",
+    element: <Layout><Stores /></Layout>,
+  },
+  {
+    path: "/cart",
+    element: <Layout><Cart /></Layout>,
+  },
+  {
+    path: "/best-sellers",
+    element: <Layout><BestSellers /></Layout>,
+  },
+  {
+    path: "/on-sale",
+    element: <Layout><OnSale /></Layout>,
+  },
+  {
+    path: "/products",
+    element: <Layout><Products /></Layout>,
+  },
+  {
+    path: "/wishlist",
+    element: <Layout><Wishlist /></Layout>,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ]);
