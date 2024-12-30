@@ -1,6 +1,5 @@
 import { OrderDetails } from "@/hooks/useOrders";
-import { useCurrency } from "@/hooks/useCurrency";
-import { Card } from "@/components/ui/card";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 import { CalendarDays } from "lucide-react";
 
 interface OrderDetailsProps {
@@ -8,8 +7,6 @@ interface OrderDetailsProps {
 }
 
 export const OrderDetailsCard = ({ order }: OrderDetailsProps) => {
-  const { formatPrice } = useCurrency();
-
   return (
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -20,7 +17,7 @@ export const OrderDetailsCard = ({ order }: OrderDetailsProps) => {
         </p>
       </div>
       <div className="text-right">
-        <p className="font-medium">{formatPrice(order.total_amount)}</p>
+        <FormattedPrice amount={order.total_amount} className="font-medium" />
         <span className="inline-block px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
           {order.status}
         </span>
