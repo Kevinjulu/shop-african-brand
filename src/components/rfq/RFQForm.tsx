@@ -29,7 +29,7 @@ interface RFQFormProps {
 export const RFQForm = ({ productId, vendorId, onSuccess }: RFQFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
-  const { currency } = useCurrency();
+  const { formatPriceSync } = useCurrency();
 
   const form = useForm<RFQFormData>({
     resolver: zodResolver(rfqSchema),
@@ -58,7 +58,7 @@ export const RFQForm = ({ productId, vendorId, onSuccess }: RFQFormProps) => {
           desired_price: data.desired_price,
           delivery_location: data.delivery_location,
           requirements: data.requirements,
-          currency_code: currency.code
+          currency_code: 'USD'
         },
       ]);
 
@@ -93,7 +93,7 @@ export const RFQForm = ({ productId, vendorId, onSuccess }: RFQFormProps) => {
 
         <div className="space-y-2">
           <label className="text-sm font-medium">
-            Desired Price per Unit ({currency.symbol})
+            Desired Price per Unit ($)
           </label>
           <Input
             type="number"

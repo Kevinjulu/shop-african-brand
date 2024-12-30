@@ -6,7 +6,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { useState, useEffect } from "react";
 
 export const DealOfTheDay = () => {
-  const { formatPrice } = useCurrency();
+  const { formatPriceSync } = useCurrency();
   const [timeLeft, setTimeLeft] = useState({
     hours: 14,
     minutes: 14,
@@ -106,10 +106,10 @@ export const DealOfTheDay = () => {
                   </h3>
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <span className="text-sm md:text-lg font-bold text-primary">
-                      {formatPrice(deal.discountedPrice)}
+                      {formatPriceSync(deal.discountedPrice)}
                     </span>
                     <span className="text-[10px] md:text-sm text-gray-500 line-through">
-                      {formatPrice(deal.originalPrice)}
+                      {formatPriceSync(deal.originalPrice)}
                     </span>
                   </div>
                 </CardContent>
