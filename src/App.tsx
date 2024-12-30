@@ -4,6 +4,7 @@ import { queryClient } from "@/lib/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "react-error-boundary";
 import { router } from "./routes";
+import { CartProvider } from "@/contexts/CartContext";
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Application error:", error);
@@ -28,8 +29,10 @@ function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <Toaster position="top-center" />
+        <CartProvider>
+          <RouterProvider router={router} />
+          <Toaster position="top-center" />
+        </CartProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

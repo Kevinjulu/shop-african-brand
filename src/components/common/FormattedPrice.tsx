@@ -1,46 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useCurrency } from '@/hooks/useCurrency';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { useEffect, useState } from "react";
+import { useCurrency } from "@/hooks/useCurrency";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormattedPriceProps {
   amount: number;
-  countryCode?: string;
   className?: string;
 }
 
-export const FormattedPrice = ({ amount, countryCode, className = '' }: FormattedPriceProps) => {
-  const { formatPrice, formatPriceSync } = useCurrency();
-  const [formattedValue, setFormattedValue] = useState(formatPriceSync(amount));
-  const [loading, setLoading] = useState(true);
+export const FormattedPrice = ({ amount, className = "" }: FormattedPriceProps) => {
+  const { formatPrice, loading } = useCurrency();
+  const [formattedPrice, setFormattedPrice] = useState<string>("");
 
   useEffect(() => {
-    let isMounted = true;
-
-    const formatPriceValue = async () => {
-      try {
-        const formatted = await formatPrice(amount, countryCode);
-        if (isMounted) {
-          setFormattedValue(formatted);
-        }
-      } catch (error) {
-        console.error('Error formatting price:', error);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
+    const formatThePrice = async () => {
+      const price = await formatPrice(amount);
+      setFormattedPrice(price);
     };
+    formatThePrice();
+  }, [amount, formatPrice]);
 
-    formatPriceValue();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [amount, countryCode, formatPrice]);
-
-  if (loading) {
-    return <LoadingSpinner />;
+  if (loading || !formattedPrice) {
+    return <Skeleton className="h-4 w-24" />;
   }
 
-  return <span className={className}>{formattedValue}</span>;
+  return <span className={className}>{formattedPrice}</span>;
 };
