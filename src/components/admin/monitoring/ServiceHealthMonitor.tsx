@@ -5,6 +5,7 @@ import { PaymentMicroservice } from "@/services/payments/PaymentMicroservice";
 import { CurrencyMicroservice } from "@/services/currency/CurrencyMicroservice";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ServiceHealthMonitor = () => {
   const [paymentMetrics, setPaymentMetrics] = useState<any>(null);
@@ -17,15 +18,35 @@ export const ServiceHealthMonitor = () => {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
+        console.log('Fetching service metrics...');
         const [payment, currency] = await Promise.all([
           paymentService.getServiceHealth(),
           currencyService.getServiceHealth()
         ]);
 
+        // Store metrics in Supabase
+        await Promise.all([
+          supabase.from('payment_service_metrics').insert({
+            service_name: 'payment_service',
+            status: payment.status,
+            response_time_ms: payment.response_time_ms,
+            error_count: payment.error_count,
+            currency: 'USD'
+          }),
+          supabase.from('payment_service_metrics').insert({
+            service_name: 'currency_service',
+            status: currency.status,
+            response_time_ms: currency.response_time_ms,
+            error_count: currency.error_count,
+            currency: 'USD'
+          })
+        ]);
+
+        console.log('Service metrics stored successfully');
         setPaymentMetrics(payment);
         setCurrencyMetrics(currency);
       } catch (error) {
-        console.error('Error fetching service metrics:', error);
+        console.error('Error fetching or storing service metrics:', error);
         toast.error('Failed to load service metrics');
       } finally {
         setIsLoading(false);
