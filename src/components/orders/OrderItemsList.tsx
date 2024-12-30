@@ -1,13 +1,11 @@
 import { OrderDetails } from "@/hooks/useOrders";
-import { useCurrency } from "@/hooks/useCurrency";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 interface OrderItemsListProps {
   items: OrderDetails['items'];
 }
 
 export const OrderItemsList = ({ items }: OrderItemsListProps) => {
-  const { formatPrice } = useCurrency();
-
   return (
     <div className="space-y-4">
       {items.map((item) => (
@@ -23,9 +21,10 @@ export const OrderItemsList = ({ items }: OrderItemsListProps) => {
               Quantity: {item.quantity}
             </p>
           </div>
-          <p className="font-medium">
-            {formatPrice(item.price_at_time * item.quantity)}
-          </p>
+          <FormattedPrice 
+            amount={item.price_at_time * item.quantity} 
+            className="font-medium"
+          />
         </div>
       ))}
     </div>

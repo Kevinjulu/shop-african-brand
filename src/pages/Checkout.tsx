@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
 import { PaymentMethodSelector } from "@/components/payments/PaymentMethodSelector";
 import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
 
 const Checkout = () => {
   const { items, clearCart } = useCart();
-  const { formatPrice } = useCurrency();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -48,13 +46,6 @@ const Checkout = () => {
       navigate("/auth");
       return;
     }
-
-    // Here you would typically:
-    // 1. Validate the form
-    // 2. Create an order in your database
-    // 3. Process payment
-    // 4. Clear the cart
-    // 5. Redirect to success page
 
     toast.success("Order placed successfully!");
     clearCart();
@@ -193,14 +184,14 @@ const Checkout = () => {
                   <RadioGroupItem value="standard" id="standard" />
                   <Label htmlFor="standard">Standard Shipping (5-7 days)</Label>
                 </div>
-                <span className="font-medium">{formatPrice(10)}</span>
+                <FormattedPrice amount={10} />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="express" id="express" />
                   <Label htmlFor="express">Express Shipping (2-3 days)</Label>
                 </div>
-                <span className="font-medium">{formatPrice(20)}</span>
+                <FormattedPrice amount={20} />
               </div>
             </RadioGroup>
           </div>
@@ -222,44 +213,13 @@ const Checkout = () => {
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex justify-between items-center">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
-                    </div>
-                  </div>
-                  <p className="font-medium">{formatPrice(item.price * item.quantity)}</p>
-                </div>
-              ))}
-              <Separator />
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
-                  <span>{formatPrice(shippingCost)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax (16%)</span>
-                  <span>{formatPrice(tax)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-lg font-semibold">
-                  <span>Total</span>
-                  <span>{formatPrice(total)}</span>
-                </div>
-              </div>
-            </div>
+            <CheckoutSummary
+              items={items}
+              subtotal={subtotal}
+              shippingCost={shippingCost}
+              tax={tax}
+              total={total}
+            />
           </div>
 
           <Button

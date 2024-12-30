@@ -1,17 +1,15 @@
 import { OrderDetails } from "@/hooks/useOrders";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 interface OrderItemProps {
   order: OrderDetails;
 }
 
 export const OrderItem = ({ order }: OrderItemProps) => {
-  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
   return (
@@ -24,14 +22,12 @@ export const OrderItem = ({ order }: OrderItemProps) => {
           </p>
         </div>
         <div className="text-right">
-          <p className="font-medium">{formatPrice(order.total_amount)}</p>
+          <FormattedPrice amount={order.total_amount} className="font-medium" />
           <span className="inline-block px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
             {order.status}
           </span>
         </div>
       </div>
-
-      <Separator className="my-4" />
 
       <div className="space-y-4">
         {order.items.map((item) => (

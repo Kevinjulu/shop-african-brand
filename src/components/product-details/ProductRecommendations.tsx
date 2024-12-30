@@ -1,8 +1,8 @@
 import { Product } from "@/types/product";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Separator } from "@/components/ui/separator";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 interface ProductRecommendationsProps {
   recentlyViewed: Product[];
@@ -11,8 +11,6 @@ interface ProductRecommendationsProps {
 }
 
 const ProductGrid = ({ products, title }: { products: Product[], title: string }) => {
-  const { formatPrice } = useCurrency();
-
   if (products.length === 0) return null;
 
   return (
@@ -34,9 +32,11 @@ const ProductGrid = ({ products, title }: { products: Product[], title: string }
                 <h4 className="text-sm font-medium line-clamp-2 mb-1">
                   {product.name}
                 </h4>
-                <p className="text-primary font-bold text-sm">
-                  {formatPrice(product.price, product.origin_country)}
-                </p>
+                <FormattedPrice 
+                  amount={product.price}
+                  countryCode={product.origin_country}
+                  className="text-primary font-bold text-sm"
+                />
               </CardContent>
             </Card>
           </Link>

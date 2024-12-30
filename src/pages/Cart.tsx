@@ -1,16 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Plus, Minus, ArrowRight, Package2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity } = useCart();
-  const { formatPrice } = useCurrency();
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 100 ? 0 : 10;
@@ -101,9 +100,10 @@ const Cart = () => {
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
-                      <p className="font-semibold text-lg text-primary">
-                        {formatPrice(item.price * item.quantity)}
-                      </p>
+                      <FormattedPrice 
+                        amount={item.price * item.quantity}
+                        className="font-semibold text-lg text-primary"
+                      />
                     </div>
                   </div>
                 </div>
@@ -119,25 +119,27 @@ const Cart = () => {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Subtotal ({items.length} items)</span>
-              <span className="font-medium">{formatPrice(subtotal)}</span>
+              <FormattedPrice amount={subtotal} className="font-medium" />
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Shipping</span>
-              <span className="font-medium text-green-600">{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+              <span className="font-medium text-green-600">
+                {shipping === 0 ? 'Free' : <FormattedPrice amount={shipping} />}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Tax (16%)</span>
-              <span className="font-medium">{formatPrice(tax)}</span>
+              <FormattedPrice amount={tax} className="font-medium" />
             </div>
             {shipping > 0 && (
               <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded">
-                Add {formatPrice(100 - subtotal)} more to get free shipping
+                Add <FormattedPrice amount={100 - subtotal} /> more to get free shipping
               </p>
             )}
             <Separator />
             <div className="flex justify-between text-lg font-semibold">
               <span>Total</span>
-              <span className="text-primary">{formatPrice(total)}</span>
+              <FormattedPrice amount={total} className="text-primary" />
             </div>
           </div>
           <div className="space-y-3">
