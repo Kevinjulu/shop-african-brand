@@ -13,6 +13,8 @@ import BestSellers from "@/pages/BestSellers";
 import OnSale from "@/pages/OnSale";
 import Products from "@/pages/Products";
 import Wishlist from "@/pages/Wishlist";
+import NewArrivals from "@/pages/NewArrivals";
+import Traditional from "@/pages/Traditional";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +65,14 @@ export const router = createBrowserRouter([
   {
     path: "/wishlist",
     element: <Layout><Wishlist /></Layout>,
+  },
+  {
+    path: "/new-arrivals",
+    element: <Layout><NewArrivals /></Layout>,
+  },
+  {
+    path: "/traditional",
+    element: <Layout><Traditional /></Layout>,
   },
   {
     path: "*",

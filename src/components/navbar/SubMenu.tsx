@@ -12,26 +12,26 @@ export const SubMenu = () => {
   ];
 
   return (
-    <div className="border-t border-black/10">
-      <div className="flex items-center h-10">
-        <CategoryDropdown />
-        <nav className="ml-8">
-          <ul className="flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <li key={item.label}>
-                <Link 
-                  to={item.path} 
-                  className="text-sm hover:text-black/70 transition-colors font-medium"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-            <li>
-              <CountrySelector />
-            </li>
-          </ul>
-        </nav>
+    <div className="border-t border-gray-200 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center h-12">
+          <CategoryDropdown />
+          <nav className="ml-8 flex-1">
+            <ul className="flex items-center space-x-8">
+              {menuItems.map((item) => (
+                <li key={item.label}>
+                  <Link 
+                    to={item.path} 
+                    className="text-sm hover:text-primary transition-colors font-medium"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <CountrySelector />
+        </div>
       </div>
     </div>
   );

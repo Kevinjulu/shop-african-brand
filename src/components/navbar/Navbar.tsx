@@ -5,6 +5,7 @@ import { SearchBar } from "./SearchBar";
 import { DesktopNav } from "./DesktopNav";
 import { MobileMenuButton } from "./MobileMenuButton";
 import { MobileMenu } from "./MobileMenu";
+import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Navbar = () => {
@@ -36,12 +37,8 @@ export const Navbar = () => {
     }
   };
 
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-  };
-
   return (
-    <nav className="relative">
+    <nav className={`relative bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
       <div className="container mx-auto px-3 md:px-4">
         <div className="flex items-center justify-between h-14">
           <MobileMenuButton 
@@ -51,17 +48,19 @@ export const Navbar = () => {
           <Logo />
           <SearchBar 
             searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
+            onSearchChange={setSearchQuery}
             onSearchSubmit={handleSearch}
           />
           <DesktopNav />
         </div>
       </div>
 
+      {!isMobile && <SubMenu />}
+
       <MobileMenu 
         isOpen={isMenuOpen}
         searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
+        onSearchChange={setSearchQuery}
         onSearchSubmit={handleSearch}
         onClose={() => setIsMenuOpen(false)}
       />
