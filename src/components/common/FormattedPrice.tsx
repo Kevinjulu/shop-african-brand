@@ -5,19 +5,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface FormattedPriceProps {
   amount: number;
   className?: string;
+  countryCode?: string;
 }
 
-export const FormattedPrice = ({ amount, className = "" }: FormattedPriceProps) => {
+export const FormattedPrice = ({ amount, className = "", countryCode }: FormattedPriceProps) => {
   const { formatPrice, loading } = useCurrency();
   const [formattedPrice, setFormattedPrice] = useState<string>("");
 
   useEffect(() => {
     const formatThePrice = async () => {
-      const price = await formatPrice(amount);
+      const price = await formatPrice(amount, countryCode);
       setFormattedPrice(price);
     };
     formatThePrice();
-  }, [amount, formatPrice]);
+  }, [amount, countryCode, formatPrice]);
 
   if (loading || !formattedPrice) {
     return <Skeleton className="h-4 w-24" />;
