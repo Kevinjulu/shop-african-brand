@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCurrency } from "@/hooks/useCurrency";
@@ -17,7 +18,25 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, formatPriceSync } = useCurrency();
+  const [formattedPrices, setFormattedPrices] = useState({
+    original: formatPriceSync(product.originalPrice),
+    discounted: formatPriceSync(product.discountedPrice)
+  });
+
+  useEffect(() => {
+    const updatePrices = async () => {
+      const [originalPrice, discountedPrice] = await Promise.all([
+        formatPrice(product.originalPrice),
+        formatPrice(product.discountedPrice)
+      ]);
+      setFormattedPrices({
+        original: originalPrice,
+        discounted: discountedPrice
+      });
+    };
+    updatePrices();
+  }, [product.originalPrice, product.discountedPrice, formatPrice]);
 
   return (
     <Link to={`/products/${product.id}`}>
@@ -48,10 +67,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold text-primary">
-                {formatPrice(product.discountedPrice)}
+                {formattedPrices.discounted}
               </span>
-              <span className="text-sm text-gray-400 font-normal">
-                {formatPrice(product.originalPrice)}
+              <span className="text-sm text-gray-400 font-normal line-through">
+                {formattedPrices.original}
               </span>
             </div>
             

@@ -7,18 +7,11 @@ export interface ServiceMetrics {
   timestamp: string;
 }
 
-export interface PaymentMetrics {
-  responseTime: number;
-  successRate: number;
-  totalTransactions: number;
-}
-
-export interface PaymentServiceState {
-  status: ServiceStatus;
-  errorCount: number;
-  metrics: PaymentMetrics;
-  providers: Array<{
-    name: string;
-    isEnabled: boolean;
-  }>;
+export interface PaymentDetails {
+  amount: number;
+  currency: string;
+  orderId: string;
+  email?: string;
+  phone?: string;
+  metadata?: Record<string, any>;
 }

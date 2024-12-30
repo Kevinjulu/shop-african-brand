@@ -15,7 +15,12 @@ export const PaymentServiceMonitor = () => {
       try {
         const metrics = await paymentService.getServiceHealth();
         console.log('Fetched payment metrics:', metrics);
-        setPaymentMetrics(metrics);
+        setPaymentMetrics({
+          status: metrics.status,
+          response_time_ms: metrics.metrics.averageResponseTime,
+          error_count: metrics.errorCount,
+          timestamp: new Date().toISOString()
+        });
         setError(null);
       } catch (err) {
         console.error('Error in PaymentServiceMonitor:', err);
@@ -72,33 +77,6 @@ export const PaymentServiceMonitor = () => {
             <Skeleton className="h-4 w-[180px]" />
           </div>
         )}
-      </Card>
-
-      <Card className="p-4">
-        <h3 className="font-semibold mb-2">Service Performance</h3>
-        <div className="space-y-2">
-          {paymentMetrics ? (
-            <>
-              <div className="flex justify-between items-center">
-                <span>Response Time</span>
-                <span className={paymentMetrics.response_time_ms > 1000 ? 'text-yellow-500' : 'text-green-500'}>
-                  {paymentMetrics.response_time_ms}ms
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Error Rate</span>
-                <span className={paymentMetrics.error_count > 0 ? 'text-red-500' : 'text-green-500'}>
-                  {paymentMetrics.error_count} errors
-                </span>
-              </div>
-            </>
-          ) : (
-            <>
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-            </>
-          )}
-        </div>
       </Card>
     </div>
   );

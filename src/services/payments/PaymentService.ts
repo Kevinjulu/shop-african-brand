@@ -5,17 +5,9 @@ import {
   initiateFlutterwavePayment,
   initiateCryptoPayment
 } from "@/utils/payments";
-import { ServiceMetrics, ServiceStatus } from "./types";
+import { ServiceMetrics, ServiceStatus, PaymentDetails } from "./types";
 
 export type PaymentProvider = 'mpesa' | 'paystack' | 'flutterwave' | 'coingate';
-
-interface PaymentDetails {
-  amount: number;
-  currency: string;
-  email: string;
-  phone?: string;
-  metadata?: Record<string, any>;
-}
 
 export class PaymentService {
   async getServiceMetrics(): Promise<ServiceMetrics> {
@@ -51,3 +43,5 @@ export class PaymentService {
     }
   }
 }
+
+export const paymentService = new PaymentService();

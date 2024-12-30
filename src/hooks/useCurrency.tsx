@@ -1,14 +1,21 @@
 import { useState, useCallback } from 'react';
 import { CurrencyMicroservice } from '@/services/currency/CurrencyMicroservice';
 
+interface Currency {
+  code: string;
+  symbol: string;
+}
+
 export const useCurrency = () => {
   const [loading, setLoading] = useState(false);
-  const currencyService = new CurrencyMicroservice();
+  const currencyService = CurrencyMicroservice.getInstance();
+  const [currency, setCurrency] = useState<Currency>({ code: 'USD', symbol: '$' });
 
   const formatPrice = useCallback(async (amount: number, countryCode?: string) => {
     try {
       setLoading(true);
-      return await currencyService.formatPrice(amount, countryCode);
+      const formatted = await currencyService.formatPrice(amount, countryCode);
+      return formatted;
     } catch (error) {
       console.error('Error formatting price:', error);
       return formatPriceSync(amount);
@@ -17,16 +24,14 @@ export const useCurrency = () => {
     }
   }, []);
 
-  const formatPriceSync = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
+  const formatPriceSync = useCallback((amount: number): string => {
+    return `${currency.symbol}${amount.toFixed(2)}`;
+  }, [currency]);
 
   return {
     formatPrice,
     formatPriceSync,
-    loading
+    loading,
+    currency
   };
 };
