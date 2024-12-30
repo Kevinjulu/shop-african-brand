@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
 
 export const NewArrivals = () => {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, formatPriceSync } = useCurrency();
+  const [formattedPrices, setFormattedPrices] = useState<Record<string, string>>({});
   
   const products = [
     {
@@ -54,6 +56,21 @@ export const NewArrivals = () => {
     }
   ];
 
+  useEffect(() => {
+    const updatePrices = async () => {
+      const prices: Record<string, string> = {};
+      for (const product of products) {
+        prices[product.id] = await formatPrice(product.price, product.origin_country);
+      }
+      setFormattedPrices(prices);
+    };
+    updatePrices();
+  }, [products, formatPrice]);
+
+  const getDisplayPrice = (productId: string, price: number, countryCode: string) => {
+    return formattedPrices[productId] || formatPriceSync(price);
+  };
+
   return (
     <section className="py-6 md:py-8 bg-cream">
       <div className="container mx-auto px-4">
@@ -94,7 +111,7 @@ export const NewArrivals = () => {
                     )}
                   </div>
                   <div className="mt-1">
-                    {formatPrice(product.price, product.origin_country)}
+                    {getDisplayPrice(product.id, product.price, product.origin_country)}
                   </div>
                 </CardContent>
               </Card>

@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { PaymentService } from '@/services/payments/PaymentService';
-
-interface ServiceMetrics {
-  response_time_ms: number;
-  error_count: number;
-  status: 'operational' | 'degraded' | 'down';
-  timestamp: string;
-}
+import { ServiceMetrics } from '@/services/payments/types';
 
 export const ServiceHealthMonitor = () => {
   const [metrics, setMetrics] = useState<ServiceMetrics>({
@@ -22,12 +16,7 @@ export const ServiceHealthMonitor = () => {
     const fetchMetrics = async () => {
       try {
         const serviceMetrics = await paymentService.getServiceMetrics();
-        setMetrics({
-          response_time_ms: serviceMetrics.metrics.responseTime || 0,
-          error_count: serviceMetrics.errorCount,
-          status: serviceMetrics.status,
-          timestamp: new Date().toISOString()
-        });
+        setMetrics(serviceMetrics);
       } catch (error) {
         console.error('Error fetching service metrics:', error);
       }

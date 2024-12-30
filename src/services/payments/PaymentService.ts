@@ -6,6 +6,7 @@ import {
   initiateFlutterwavePayment,
   initiateCryptoPayment
 } from "@/utils/payments";
+import { ServiceMetrics } from "./types";
 
 export type PaymentProvider = 'mpesa' | 'paystack' | 'flutterwave' | 'coingate';
 
@@ -18,6 +19,24 @@ interface PaymentDetails {
 }
 
 export class PaymentService {
+  async getServiceMetrics(): Promise<ServiceMetrics> {
+    const { data, error } = await supabase
+      .from('payment_service_metrics')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    return {
+      status: data.status,
+      response_time_ms: data.response_time_ms,
+      error_count: data.error_count,
+      timestamp: data.timestamp
+    };
+  }
+
   static async initiatePayment(provider: PaymentProvider, details: PaymentDetails) {
     try {
       let response;
