@@ -5,6 +5,7 @@ import { PaymentMicroservice } from "@/services/payments/PaymentMicroservice";
 import { CurrencyMicroservice } from "@/services/currency/CurrencyMicroservice";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ServiceHealthMonitor = () => {
   const [paymentMetrics, setPaymentMetrics] = useState<any>(null);
@@ -17,15 +18,61 @@ export const ServiceHealthMonitor = () => {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
+        console.log('Fetching service metrics...');
         const [payment, currency] = await Promise.all([
           paymentService.getServiceHealth(),
           currencyService.getServiceHealth()
         ]);
 
+        // Prepare metrics with all required fields
+        const paymentMetricsData = {
+          service_name: 'payment_service',
+          status: payment.status || 'unknown',
+          response_time_ms: payment.response_time_ms || 0,
+          error_count: payment.error_count || 0,
+          currency: 'USD',
+          success_rate: 100,
+          total_transactions: 0,
+          total_amount: 0,
+          metadata: {}
+        };
+
+        const currencyMetricsData = {
+          service_name: 'currency_service',
+          status: currency.status || 'unknown',
+          response_time_ms: currency.response_time_ms || 0,
+          error_count: currency.error_count || 0,
+          currency: 'USD',
+          success_rate: 100,
+          total_transactions: 0,
+          total_amount: 0,
+          metadata: {}
+        };
+
+        console.log('Storing payment metrics:', paymentMetricsData);
+        console.log('Storing currency metrics:', currencyMetricsData);
+
+        // Store metrics in Supabase
+        const [paymentResult, currencyResult] = await Promise.all([
+          supabase.from('payment_service_metrics').insert(paymentMetricsData),
+          supabase.from('payment_service_metrics').insert(currencyMetricsData)
+        ]);
+
+        if (paymentResult.error) {
+          console.error('Error storing payment metrics:', paymentResult.error);
+          throw paymentResult.error;
+        }
+
+        if (currencyResult.error) {
+          console.error('Error storing currency metrics:', currencyResult.error);
+          throw currencyResult.error;
+        }
+
+        console.log('Service metrics stored successfully');
         setPaymentMetrics(payment);
         setCurrencyMetrics(currency);
       } catch (error) {
-        console.error('Error fetching service metrics:', error);
+        console.error('Error fetching or storing service metrics:', error);
         toast.error('Failed to load service metrics');
       } finally {
         setIsLoading(false);
