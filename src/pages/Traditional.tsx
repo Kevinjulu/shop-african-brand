@@ -3,11 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrency } from "@/hooks/useCurrency";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 const Traditional = () => {
-  const { formatPrice } = useCurrency();
-
   const { data: products, isLoading } = useQuery({
     queryKey: ["traditional"],
     queryFn: async () => {
@@ -57,7 +55,7 @@ const Traditional = () => {
                   />
                 </div>
                 <h3 className="font-medium text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-primary font-bold">{formatPrice(product.price)}</p>
+                <FormattedPrice amount={product.price} className="text-primary font-bold" />
               </CardContent>
             </Card>
           </Link>

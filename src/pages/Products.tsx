@@ -5,15 +5,14 @@ import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Badge } from "@/components/ui/badge";
 import { Star, Truck, Package2 } from "lucide-react";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 const Products = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const countryFilter = searchParams.get('country');
-  const { formatPrice } = useCurrency();
   
   const { 
     query, 
@@ -100,9 +99,10 @@ const Products = () => {
                     <h2 className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors">
                       {product.name}
                     </h2>
-                    <p className="text-primary font-bold text-lg">
-                      {formatPrice(product.price)}
-                    </p>
+                    <FormattedPrice 
+                      amount={product.price}
+                      className="text-primary font-bold text-lg"
+                    />
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-yellow-400">
                         <Star className="w-4 h-4 fill-current" />

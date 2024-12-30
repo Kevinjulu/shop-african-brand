@@ -3,16 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Badge } from "@/components/ui/badge";
+import { FormattedPrice } from "@/components/common/FormattedPrice";
 
 const OnSale = () => {
-  const { formatPrice } = useCurrency();
-
   const { data: products, isLoading } = useQuery({
     queryKey: ["on-sale"],
     queryFn: async () => {
-      // In a real app, this would filter by products with active discounts
       const { data, error } = await supabase
         .from("products")
         .select("*")
@@ -62,8 +59,8 @@ const OnSale = () => {
                 </div>
                 <h3 className="font-medium text-gray-900 mb-2">{product.name}</h3>
                 <div className="flex items-center gap-2">
-                  <p className="text-primary font-bold">{formatPrice(product.price * 0.8)}</p>
-                  <p className="text-gray-500 line-through text-sm">{formatPrice(product.price)}</p>
+                  <FormattedPrice amount={product.price * 0.8} className="text-primary font-bold" />
+                  <FormattedPrice amount={product.price} className="text-gray-500 line-through text-sm" />
                 </div>
               </CardContent>
             </Card>
