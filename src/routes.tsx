@@ -11,12 +11,12 @@ export const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      ...publicRoutes,
-      ...shopRoutes,
-      ...accountRoutes,
-      ...adminRoutes,
-      ...vendorRoutes,
-      ...policyRoutes
+      ...(Array.isArray(publicRoutes) ? publicRoutes : [publicRoutes]),
+      ...(Array.isArray(shopRoutes) ? shopRoutes : [shopRoutes]),
+      ...(Array.isArray(accountRoutes) ? accountRoutes : [accountRoutes]),
+      ...(Array.isArray(adminRoutes) ? adminRoutes : [adminRoutes]),
+      ...(Array.isArray(vendorRoutes) ? vendorRoutes : [vendorRoutes]),
+      ...(Array.isArray(policyRoutes) ? policyRoutes : [policyRoutes])
     ]
   }
 ]);

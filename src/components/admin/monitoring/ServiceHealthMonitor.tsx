@@ -5,9 +5,9 @@ import { ServiceMetrics } from '@/services/payments/types';
 
 export const ServiceHealthMonitor = () => {
   const [metrics, setMetrics] = useState<ServiceMetrics>({
+    status: 'operational',
     response_time_ms: 0,
     error_count: 0,
-    status: 'operational',
     timestamp: new Date().toISOString()
   });
 
@@ -23,14 +23,14 @@ export const ServiceHealthMonitor = () => {
     };
 
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 60000);
+    const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <Card className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Service Health</h2>
-      <div className="space-y-2">
+      <h3 className="text-lg font-semibold mb-4">Service Health Status</h3>
+      <div className="space-y-4">
         <div className="flex justify-between">
           <span>Status:</span>
           <span className={`font-medium ${
@@ -45,8 +45,12 @@ export const ServiceHealthMonitor = () => {
           <span>{metrics.response_time_ms}ms</span>
         </div>
         <div className="flex justify-between">
-          <span>Errors (24h):</span>
+          <span>Error Count:</span>
           <span>{metrics.error_count}</span>
+        </div>
+        <div className="flex justify-between text-sm text-gray-500">
+          <span>Last Updated:</span>
+          <span>{new Date(metrics.timestamp).toLocaleTimeString()}</span>
         </div>
       </div>
     </Card>
