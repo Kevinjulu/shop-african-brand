@@ -8,7 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { categories } from "@/data/categories";
+
+const categories = [
+  { name: "Fashion & Clothing", path: "/products?category=fashion" },
+  { name: "Art & Sculptures", path: "/products?category=art" },
+  { name: "Jewelry & Accessories", path: "/products?category=jewelry" },
+  { name: "Home Decor", path: "/products?category=decor" },
+  { name: "Photography", path: "/products?category=photography" },
+  { name: "Traditional Items", path: "/products?category=traditional" },
+];
 
 export const CategoryDropdown = () => {
   return (
@@ -31,7 +39,7 @@ export const CategoryDropdown = () => {
           {categories.map((category) => (
             <DropdownMenuItem key={category.name} asChild>
               <Link
-                to={`/products?category=${encodeURIComponent(category.name)}`}
+                to={category.path}
                 className="flex items-center justify-between w-full py-2.5 px-4 text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors rounded-md"
               >
                 <span className="font-medium">{category.name}</span>

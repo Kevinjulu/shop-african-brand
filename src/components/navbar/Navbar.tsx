@@ -38,19 +38,23 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className={`relative bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
-      <div className="container mx-auto px-3 md:px-4">
-        <div className="flex items-center justify-between h-14">
-          <MobileMenuButton 
-            isOpen={isMenuOpen}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          />
-          <Logo />
+    <header className={`w-full bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <MobileMenuButton 
+              isOpen={isMenuOpen}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            />
+            <Logo />
+          </div>
+          
           <SearchBar 
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onSearchSubmit={handleSearch}
           />
+          
           <DesktopNav />
         </div>
       </div>
@@ -64,6 +68,6 @@ export const Navbar = () => {
         onSearchSubmit={handleSearch}
         onClose={() => setIsMenuOpen(false)}
       />
-    </nav>
+    </header>
   );
 };
