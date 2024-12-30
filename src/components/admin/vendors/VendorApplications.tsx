@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { VendorApplicationsTable } from "./VendorApplicationsTable";
 import { VendorApplicationDetails } from "./VendorApplicationDetails";
+import { Json } from "@/integrations/supabase/types";
 
 interface VendorApplication {
   id: string;
@@ -35,7 +36,20 @@ export const VendorApplications = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setApplications(data || []);
+
+      // Transform the data to match VendorApplication interface
+      const transformedData: VendorApplication[] = (data || []).map(app => ({
+        id: app.id,
+        business_name: app.business_name,
+        business_type: app.business_type || '',
+        verification_status: app.verification_status || 'pending',
+        created_at: app.created_at,
+        verification_documents: Array.isArray(app.verification_documents) 
+          ? app.verification_documents 
+          : []
+      }));
+
+      setApplications(transformedData);
     } catch (error) {
       console.error("Error fetching applications:", error);
       toast.error("Failed to load vendor applications");

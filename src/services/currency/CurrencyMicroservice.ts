@@ -10,6 +10,7 @@ interface CurrencyMetrics {
   response_time_ms: number;
   error_count: number;
   timestamp: string;
+  currency: string;
 }
 
 export class CurrencyMicroservice {
@@ -18,6 +19,7 @@ export class CurrencyMicroservice {
   private lastUpdate: Date = new Date();
   private updateInterval: number = 3600000; // 1 hour
   private errorCount: number = 0;
+  private defaultCurrency: string = 'USD';
 
   private constructor() {
     this.initializeExchangeRates();
@@ -34,7 +36,6 @@ export class CurrencyMicroservice {
   private async initializeExchangeRates() {
     console.log("CurrencyMicroservice: Initializing exchange rates");
     
-    // Initialize with default rates
     this.exchangeRates = {
       USD: 1,
       EUR: 0.85,
@@ -62,7 +63,6 @@ export class CurrencyMicroservice {
   }
 
   private async updateExchangeRates() {
-    // In a real application, this would fetch from an external API
     console.log("CurrencyMicroservice: Updating exchange rates");
     this.lastUpdate = new Date();
     await this.logMetrics('rate_update', 0);
@@ -104,12 +104,13 @@ export class CurrencyMicroservice {
 
   private async logMetrics(operation: string, responseTime: number) {
     try {
-      const metrics: CurrencyMetrics = {
+      const metrics = {
         service_name: 'currency_service',
         status: this.errorCount > 5 ? 'down' : this.errorCount > 0 ? 'degraded' : 'operational',
         response_time_ms: responseTime,
         error_count: this.errorCount,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        currency: this.defaultCurrency // Add the required currency field
       };
 
       await supabase
@@ -129,6 +130,7 @@ export class CurrencyMicroservice {
           status: 'error',
           error_count: this.errorCount,
           metadata: { operation, error: error.message },
+          currency: this.defaultCurrency // Add the required currency field
         });
     } catch (err) {
       console.error("Failed to log currency error:", err);

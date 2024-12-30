@@ -16,6 +16,7 @@ const DEFAULT_CURRENCY: Currency = {
 
 export const useCurrency = () => {
   const [userCurrency, setUserCurrency] = useState<Currency>(DEFAULT_CURRENCY);
+  const [isConverting, setIsConverting] = useState(false);
 
   useEffect(() => {
     const detectLocation = async () => {
@@ -38,29 +39,46 @@ export const useCurrency = () => {
     detectLocation();
   }, []);
 
-  const formatPrice = (price: number, originCountry?: string) => {
-    const originalCurrency = CURRENCIES[originCountry || 'US'];
-    
-    if (!originCountry || originCountry === userCurrency.code) {
+  const formatPrice = async (price: number, originCountry?: string) => {
+    setIsConverting(true);
+    try {
+      const originalCurrency = CURRENCIES[originCountry || 'US'];
+      
+      if (!originCountry || originCountry === userCurrency.code) {
+        setIsConverting(false);
+        return (
+          <span className="text-base font-bold text-primary">
+            {formatCurrencyValue(price, userCurrency)}
+          </span>
+        );
+      }
+
+      const convertedPrice = await currencyService.convert(
+        price, 
+        originalCurrency.code, 
+        userCurrency.code
+      );
+      
+      setIsConverting(false);
+      return (
+        <div className="space-y-0.5">
+          <span className="text-base font-bold text-primary block">
+            {formatCurrencyValue(price, originalCurrency)}
+          </span>
+          <span className="text-xs text-gray-500 font-normal block">
+            ≈ {formatCurrencyValue(convertedPrice, userCurrency)}
+          </span>
+        </div>
+      );
+    } catch (error) {
+      console.error('Error converting currency:', error);
+      setIsConverting(false);
       return (
         <span className="text-base font-bold text-primary">
-          {formatCurrencyValue(price, userCurrency)}
+          {formatCurrencyValue(price, DEFAULT_CURRENCY)}
         </span>
       );
     }
-
-    const convertedPrice = currencyService.convert(price, originalCurrency.code, userCurrency.code);
-    
-    return (
-      <div className="space-y-0.5">
-        <span className="text-base font-bold text-primary block">
-          {formatCurrencyValue(price, originalCurrency)}
-        </span>
-        <span className="text-xs text-gray-500 font-normal block">
-          ≈ {formatCurrencyValue(convertedPrice, userCurrency)}
-        </span>
-      </div>
-    );
   };
 
   const formatCurrencyValue = (price: number, currency: Currency): string => {
@@ -72,14 +90,10 @@ export const useCurrency = () => {
     return `${currency.symbol} ${formattedNumber}`;
   };
 
-  const convertPrice = (price: number, fromCurrency: string, toCurrency: string): number => {
-    return currencyService.convert(price, fromCurrency, toCurrency);
-  };
-
   return {
     currency: userCurrency,
     formatPrice,
     formatCurrencyValue,
-    convertPrice,
+    isConverting
   };
 };

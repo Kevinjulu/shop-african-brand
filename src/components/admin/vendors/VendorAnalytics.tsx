@@ -3,6 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, DollarSign, Users, ShoppingBag } from "lucide-react";
 
+interface VendorAnalyticsSummary {
+  total_vendors?: number;
+  total_sales: number;
+  total_products: number;
+  average_rating: number;
+}
+
 export const VendorAnalytics = () => {
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['vendor-analytics-summary'],
@@ -12,7 +19,7 @@ export const VendorAnalytics = () => {
         .select('*');
       
       if (error) throw error;
-      return data;
+      return data as VendorAnalyticsSummary[];
     }
   });
 
