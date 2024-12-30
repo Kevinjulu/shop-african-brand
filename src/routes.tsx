@@ -9,12 +9,12 @@ import { policyRoutes } from "./routes/policy";
 
 export const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <Layout><Outlet /></Layout>,
     children: [
       ...publicRoutes,
       ...shopRoutes,
-      ...adminRoutes,
-      ...vendorRoutes,
+      adminRoutes,
+      vendorRoutes,
       ...accountRoutes,
       ...policyRoutes,
     ],

@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, ShieldCheck } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
 
 export const BestSellers = () => {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, formatPriceSync } = useCurrency();
+  const [formattedPrices, setFormattedPrices] = useState<Record<string, string>>({});
   
   const products = [
     {
@@ -47,6 +49,18 @@ export const BestSellers = () => {
       image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&auto=format&fit=crop&q=60"
     }
   ];
+
+  useEffect(() => {
+    // Load formatted prices asynchronously
+    const loadPrices = async () => {
+      const prices: Record<string, string> = {};
+      for (const product of products) {
+        prices[product.id] = await formatPrice(product.price, product.origin_country);
+      }
+      setFormattedPrices(prices);
+    };
+    loadPrices();
+  }, [products, formatPrice]);
 
   return (
     <section className="py-4 md:py-8 bg-cream">
@@ -92,7 +106,7 @@ export const BestSellers = () => {
                     )}
                   </div>
                   <div className="mt-1">
-                    {formatPrice(product.price, product.origin_country)}
+                    {formattedPrices[product.id] || formatPriceSync(product.price)}
                   </div>
                   <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">
                     {product.sales.toLocaleString()} sold
