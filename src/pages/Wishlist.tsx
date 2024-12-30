@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
-import { Product } from "@/types/product";
+import { Product, ProductStatus } from "@/types/product";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,7 +57,14 @@ const Wishlist = () => {
         if (productsError) throw productsError;
         
         console.log("Fetched products:", products);
-        setWishlistItems(products);
+        
+        // Transform the data to ensure correct typing
+        const typedProducts = products.map(product => ({
+          ...product,
+          status: product.status as ProductStatus, // Explicitly type the status field
+        })) as Product[];
+        
+        setWishlistItems(typedProducts);
       } else {
         console.log("No wishlist items found");
         setWishlistItems([]);
