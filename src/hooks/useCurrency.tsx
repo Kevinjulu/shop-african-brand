@@ -10,6 +10,7 @@ export const useCurrency = () => {
   const [loading, setLoading] = useState(false);
   const currencyService = CurrencyMicroservice.getInstance();
   const [currency, setCurrency] = useState<Currency>({ code: 'USD', symbol: '$' });
+  const [formattedPrices, setFormattedPrices] = useState<Record<string, string>>({});
 
   const formatPrice = useCallback(async (amount: number, countryCode?: string) => {
     try {
@@ -32,6 +33,8 @@ export const useCurrency = () => {
     formatPrice,
     formatPriceSync,
     loading,
-    currency
+    currency,
+    formattedPrices,
+    setFormattedPrices
   };
 };

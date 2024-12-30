@@ -1,16 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-import {
-  initiateMpesaPayment,
-  initiatePaystackPayment,
-  initiateFlutterwavePayment,
-  initiateCryptoPayment
-} from "@/utils/payments";
 import { ServiceMetrics, ServiceStatus, PaymentDetails } from "./types";
 
 export type PaymentProvider = 'mpesa' | 'paystack' | 'flutterwave' | 'coingate';
 
 export class PaymentService {
-  async getServiceMetrics(): Promise<ServiceMetrics> {
+  static async getServiceMetrics(): Promise<ServiceMetrics> {
     const { data, error } = await supabase
       .from('payment_service_metrics')
       .select('*')
@@ -28,20 +22,50 @@ export class PaymentService {
     };
   }
 
-  async initiatePayment(provider: PaymentProvider, details: PaymentDetails) {
+  static async initiatePayment(provider: PaymentProvider, details: PaymentDetails) {
     switch (provider) {
       case 'mpesa':
-        return await initiateMpesaPayment(details);
+        return await this.initiateMpesaPayment(details);
       case 'paystack':
-        return await initiatePaystackPayment(details);
+        return await this.initiatePaystackPayment(details);
       case 'flutterwave':
-        return await initiateFlutterwavePayment(details);
+        return await this.initiateFlutterwavePayment(details);
       case 'coingate':
-        return await initiateCryptoPayment(details);
+        return await this.initiateCryptoPayment(details);
       default:
         throw new Error('Unsupported payment provider');
     }
   }
-}
 
-export const paymentService = new PaymentService();
+  private static async initiateMpesaPayment(details: PaymentDetails) {
+    const { data, error } = await supabase.functions.invoke('mpesa-payment', {
+      body: details
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  private static async initiatePaystackPayment(details: PaymentDetails) {
+    const { data, error } = await supabase.functions.invoke('paystack-payment', {
+      body: details
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  private static async initiateFlutterwavePayment(details: PaymentDetails) {
+    const { data, error } = await supabase.functions.invoke('flutterwave-payment', {
+      body: details
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  private static async initiateCryptoPayment(details: PaymentDetails) {
+    const { data, error } = await supabase.functions.invoke('crypto-payment', {
+      body: details
+    });
+    if (error) throw error;
+    return data;
+  }
+}
