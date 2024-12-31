@@ -12,9 +12,11 @@ import Cart from "@/pages/Cart";
 import BestSellers from "@/pages/BestSellers";
 import OnSale from "@/pages/OnSale";
 import Products from "@/pages/Products";
+import ProductDetails from "@/pages/ProductDetails";
 import Wishlist from "@/pages/Wishlist";
 import NewArrivals from "@/pages/NewArrivals";
 import Traditional from "@/pages/Traditional";
+import Auth from "@/pages/Auth";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +65,10 @@ export const router = createBrowserRouter([
     element: <Layout><Products /></Layout>,
   },
   {
+    path: "/product/:id",
+    element: <Layout><ProductDetails /></Layout>,
+  },
+  {
     path: "/wishlist",
     element: <Layout><Wishlist /></Layout>,
   },
@@ -73,6 +79,10 @@ export const router = createBrowserRouter([
   {
     path: "/traditional",
     element: <Layout><Traditional /></Layout>,
+  },
+  {
+    path: "/auth",
+    element: <Layout><Auth /></Layout>,
   },
   {
     path: "*",

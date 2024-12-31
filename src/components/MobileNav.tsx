@@ -1,7 +1,7 @@
-import { Home, Search, Store, ShoppingCart, User } from "lucide-react";
+import { Home, Search, Store, ShoppingCart, User, Menu } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useAuth } from "./auth/AuthProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useCart } from "@/contexts/CartContext";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { SearchInput } from "./search/SearchInput";
@@ -15,6 +15,8 @@ export const MobileNav = () => {
   const { itemsCount } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  console.log("MobileNav rendering, pathname:", location.pathname);
 
   const items = [
     {
@@ -30,8 +32,8 @@ export const MobileNav = () => {
     },
     {
       icon: Store,
-      label: "Brands",
-      href: "/stores",
+      label: "Products",
+      href: "/products",
     },
     {
       icon: ShoppingCart,
@@ -52,10 +54,6 @@ export const MobileNav = () => {
       setIsSearchOpen(false);
       setSearchQuery("");
     }
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
   };
 
   return (
@@ -92,7 +90,7 @@ export const MobileNav = () => {
           <div className="space-y-4">
             <SearchInput
               value={searchQuery}
-              onChange={handleSearchChange}
+              onChange={(e) => setSearchQuery(e.target.value)}
               onSearch={handleSearch}
               placeholder="Search products..."
               className="bg-white"

@@ -37,7 +37,7 @@ export const Navbar = () => {
     }
   };
 
-  console.log("Navbar rendering, isSticky:", isSticky);
+  console.log("Navbar rendering, isSticky:", isSticky, "pathname:", location.pathname);
 
   return (
     <header className={`w-full bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
