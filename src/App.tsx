@@ -1,10 +1,13 @@
+import React from "react";
 import { RouterProvider } from "react-router-dom";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "react-error-boundary";
 import { router } from "./routes";
 import { CartProvider } from "@/contexts/CartContext";
+
+// Create a client
+const queryClient = new QueryClient();
 
 function ErrorFallback({ error }: { error: Error }) {
   console.error("Application error:", error);
@@ -27,14 +30,16 @@ function ErrorFallback({ error }: { error: Error }) {
 function App() {
   console.log("App component rendering, pathname:", window.location.pathname);
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <CartProvider>
-          <RouterProvider router={router} />
-          <Toaster position="top-center" />
-        </CartProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <React.StrictMode>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <QueryClientProvider client={queryClient}>
+          <CartProvider>
+            <RouterProvider router={router} />
+            <Toaster position="top-center" />
+          </CartProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </React.StrictMode>
   );
 }
 
