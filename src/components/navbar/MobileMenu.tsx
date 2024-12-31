@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -26,83 +26,83 @@ export const MobileMenu = ({
 
   const mobileMenuItems = [
     { title: "Home", path: "/" },
-    { title: "Shop", path: "/products" },
+    { title: "All Products", path: "/products" },
+    { title: "New Arrivals", path: "/new-arrivals" },
+    { title: "Best Sellers", path: "/best-sellers" },
+    { title: "On Sale", path: "/on-sale" },
+    { title: "Traditional", path: "/traditional" },
     { title: "Stores", path: "/stores" },
     { title: "About Us", path: "/about" },
-    { title: "Contact", path: "/contact" },
-    { title: "FAQ", path: "/faq" },
   ];
 
   const secondaryMenuItems = [
     { title: "Shipping Policy", path: "/shipping-policy" },
     { title: "Returns Policy", path: "/returns-policy" },
-    { title: "Careers", path: "/careers" },
-    { title: "Affiliate", path: "/affiliate" },
-    { title: "Terms", path: "/terms" },
+    { title: "Terms & Conditions", path: "/terms" },
+    { title: "Contact Us", path: "/contact" },
   ];
 
   return (
-    <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
-      <div className="p-4 border-b bg-gray-50/50">
-        <form onSubmit={onSearchSubmit} className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleChange}
-            className="flex-1 border-gray-200 focus:border-[#FDB813] transition-colors"
-          />
+    <div className="fixed inset-0 z-50 bg-white">
+      <div className="flex flex-col h-full">
+        <div className="p-4 border-b">
+          <form onSubmit={onSearchSubmit} className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={handleChange}
+              className="flex-1"
+            />
+            <Button type="submit" variant="default">
+              <Search className="h-5 w-5" />
+            </Button>
+          </form>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <nav className="divide-y divide-gray-100">
+            {mobileMenuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                onClick={onClose}
+              >
+                <span>{item.title}</span>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </Link>
+            ))}
+          </nav>
+
+          <div className="bg-gray-50 mt-4">
+            <div className="px-4 py-3 text-sm font-medium text-gray-500">
+              Customer Service
+            </div>
+            <nav className="divide-y divide-gray-100">
+              {secondaryMenuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-100/50"
+                  onClick={onClose}
+                >
+                  <span>{item.title}</span>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        <div className="border-t p-4">
           <Button 
-            type="submit" 
-            className="bg-[#FDB813] hover:bg-[#FDB813]/90 text-black shadow-sm"
+            variant="outline" 
+            className="w-full"
+            onClick={onClose}
           >
-            <Search className="h-5 w-5" />
+            Close Menu
           </Button>
-        </form>
-      </div>
-
-      <div className="divide-y divide-gray-100">
-        <div className="py-2 bg-white">
-          {mobileMenuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#FDB813] transition-colors"
-              onClick={onClose}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </div>
-
-        <div className="py-2 bg-gray-50">
-          {secondaryMenuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="flex items-center px-4 py-2.5 text-sm text-gray-600 hover:text-[#FDB813] hover:bg-gray-100/50 transition-colors"
-              onClick={onClose}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </div>
-
-        <div className="py-2 bg-[#FDB813]/5">
-          <Link
-            to="/vendor/register"
-            className="flex items-center px-4 py-3 text-gray-700 hover:bg-[#FDB813]/10 transition-colors"
-            onClick={onClose}
-          >
-            Sell On Shop African Brands
-          </Link>
-          <Link
-            to="/track-order"
-            className="flex items-center px-4 py-3 text-gray-700 hover:bg-[#FDB813]/10 transition-colors"
-            onClick={onClose}
-          >
-            Track Your Order
-          </Link>
         </div>
       </div>
     </div>

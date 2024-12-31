@@ -8,6 +8,7 @@ export const SubMenu = () => {
     { label: "Best Sellers", path: "/best-sellers" },
     { label: "On Sale", path: "/on-sale" },
     { label: "Traditional", path: "/traditional" },
+    { label: "All Products", path: "/products" },
     { label: "All Stores", path: "/stores" },
   ];
 
