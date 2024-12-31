@@ -19,7 +19,7 @@ export const SubMenu = () => {
           <nav className="ml-8 flex-1">
             <ul className="flex items-center space-x-8">
               {menuItems.map((item) => (
-                <li key={item.label}>
+                <li key={item.path}>
                   <Link 
                     to={item.path} 
                     className="text-sm hover:text-primary transition-colors font-medium"
