@@ -38,7 +38,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className={`w-full bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
+    <header className={`w-full bg-white z-50 ${isSticky ? 'sticky top-0 shadow-md' : ''}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
