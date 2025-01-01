@@ -7,18 +7,8 @@ export default defineConfig(({ mode }) => ({
   base: "/",
   server: {
     host: true,
-    port: 5173,
+    port: 8080,
     strictPort: true,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization"
-    }
-  },
-  preview: {
-    port: 5173,
-    strictPort: true,
-    host: true,
   },
   plugins: [
     react(),
