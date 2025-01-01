@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: true,
     port: 8080,
     strictPort: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type, Authorization'
+    }
+  },
+  preview: {
+    port: 8080,
+    strictPort: true,
   },
   plugins: [
     react(),
@@ -17,6 +26,17 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
     },
   },
 }));
