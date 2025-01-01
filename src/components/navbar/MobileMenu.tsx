@@ -56,7 +56,7 @@ export const MobileMenu = ({
               onChange={handleChange}
               className="flex-1"
             />
-            <Button type="submit" variant="default">
+            <Button type="submit" variant="default" className="bg-primary hover:bg-primary/90">
               <Search className="h-5 w-5" />
             </Button>
           </form>
@@ -68,7 +68,7 @@ export const MobileMenu = ({
               <Link
                 key={item.path}
                 to={item.path}
-                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                className="flex items-center justify-between px-4 py-3 hover:bg-primary/5"
                 onClick={onClose}
               >
                 <span>{item.title}</span>
@@ -86,7 +86,7 @@ export const MobileMenu = ({
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-100/50"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-primary/5"
                   onClick={onClose}
                 >
                   <span>{item.title}</span>
@@ -100,7 +100,7 @@ export const MobileMenu = ({
         <div className="border-t p-4">
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full hover:bg-primary/5"
             onClick={onClose}
           >
             Close Menu

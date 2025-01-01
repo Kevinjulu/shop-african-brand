@@ -12,7 +12,7 @@ export const MobileMenuButton = ({ isOpen, onClick }: MobileMenuButtonProps) => 
       <Button 
         variant="ghost" 
         onClick={onClick}
-        className="p-2 hover:bg-gray-100 transition-colors rounded-full"
+        className="p-2 hover:bg-primary/10 hover:text-primary transition-colors rounded-full"
       >
         <Menu className="h-6 w-6" />
       </Button>

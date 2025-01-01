@@ -8,23 +8,37 @@ import { MobileMenu } from "./MobileMenu";
 import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { NavIcons } from "./NavIcons";
+import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSticky, setIsSticky] = useState(false);
+  const [showSubmenu, setShowSubmenu] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
+      const currentScrollY = window.scrollY;
+      setIsSticky(currentScrollY > 0);
+      
+      // Only hide submenu on desktop
+      if (!isMobile) {
+        if (currentScrollY > lastScrollY) {
+          setShowSubmenu(false);
+        } else {
+          setShowSubmenu(true);
+        }
+      }
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY, isMobile]);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -41,7 +55,12 @@ export const Navbar = () => {
   console.log("Navbar rendering, isSticky:", isSticky, "pathname:", location.pathname);
 
   return (
-    <header className={`w-full bg-white ${isSticky ? 'sticky top-0 shadow-md z-50' : ''}`}>
+    <header 
+      className={cn(
+        "w-full bg-white transition-all duration-300",
+        isSticky && "fixed top-0 left-0 right-0 shadow-md z-50"
+      )}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
@@ -62,7 +81,7 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {!isMobile && <SubMenu />}
+      {!isMobile && showSubmenu && <SubMenu />}
 
       <MobileMenu 
         isOpen={isMenuOpen}
