@@ -1,17 +1,18 @@
 import { Home, Search, Store, ShoppingCart, User, Menu } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuth } from "@/components/AuthProvider";
 import { useCart } from "@/contexts/CartContext";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { SearchInput } from "./search/SearchInput";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 export const MobileNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { itemsCount } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -53,6 +54,19 @@ export const MobileNav = () => {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery("");
+    } else {
+      toast.error("Please enter a search term");
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Signed out successfully");
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
     }
   };
 

@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -27,6 +27,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+      
+      if (event === 'SIGNED_OUT') {
+        navigate('/auth');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   console.log("AuthProvider: Current state", { 
     isAuthenticated: !!user, 
     userEmail: user?.email,
@@ -50,7 +64,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Only show loading spinner for initial auth check
   if (loading && !user) {
     console.log("AuthProvider: Initial loading state");
     return (

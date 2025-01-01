@@ -2,16 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import { SearchBar } from "./SearchBar";
-import { DesktopNav } from "./DesktopNav";
-import { MobileMenuButton } from "./MobileMenuButton";
-import { MobileMenu } from "./MobileMenu";
+import { NavIcons } from "./NavIcons";
 import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { NavIcons } from "./NavIcons";
+import { MobileNav } from "../MobileNav";
 import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSticky, setIsSticky] = useState(false);
   const [showSubmenu, setShowSubmenu] = useState(true);
@@ -25,7 +22,6 @@ export const Navbar = () => {
       const currentScrollY = window.scrollY;
       setIsSticky(currentScrollY > 0);
       
-      // Only hide submenu on desktop
       if (!isMobile) {
         if (currentScrollY > lastScrollY) {
           setShowSubmenu(false);
@@ -40,15 +36,10 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY, isMobile]);
 
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
-      setIsMenuOpen(false);
     }
   };
 
@@ -64,10 +55,6 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 bg-white">
           <div className="flex items-center gap-4">
-            <MobileMenuButton 
-              isOpen={isMenuOpen}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            />
             <Logo />
           </div>
           
@@ -82,14 +69,7 @@ export const Navbar = () => {
       </div>
 
       {!isMobile && showSubmenu && <SubMenu />}
-
-      <MobileMenu 
-        isOpen={isMenuOpen}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSearchSubmit={handleSearch}
-        onClose={() => setIsMenuOpen(false)}
-      />
+      <MobileNav />
     </header>
   );
 };
