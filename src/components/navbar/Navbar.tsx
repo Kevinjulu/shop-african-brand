@@ -7,6 +7,7 @@ import { MobileMenuButton } from "./MobileMenuButton";
 import { MobileMenu } from "./MobileMenu";
 import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { NavIcons } from "./NavIcons";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,7 +58,7 @@ export const Navbar = () => {
             onSearchSubmit={handleSearch}
           />
           
-          <DesktopNav />
+          <NavIcons />
         </div>
       </div>
 

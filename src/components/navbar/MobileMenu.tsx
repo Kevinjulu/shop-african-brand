@@ -18,6 +18,8 @@ export const MobileMenu = ({
   onSearchSubmit,
   onClose 
 }: MobileMenuProps) => {
+  console.log("MobileMenu rendering, isOpen:", isOpen);
+  
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

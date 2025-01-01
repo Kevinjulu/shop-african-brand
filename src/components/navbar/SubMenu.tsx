@@ -12,6 +12,8 @@ export const SubMenu = () => {
     { label: "All Stores", path: "/stores" },
   ];
 
+  console.log("SubMenu rendering");
+
   return (
     <div className="border-t border-gray-200 bg-white">
       <div className="container mx-auto px-4">

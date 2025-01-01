@@ -1,4 +1,4 @@
-import { Navbar } from "./Navbar";
+import { Navbar } from "./navbar/Navbar";
 import { Footer } from "./Footer";
 
 interface LayoutProps {
@@ -6,6 +6,7 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  console.log("Layout rendering");
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
