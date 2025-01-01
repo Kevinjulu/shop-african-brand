@@ -1,5 +1,6 @@
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/search/SearchInput";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -8,35 +9,25 @@ interface SearchBarProps {
 }
 
 export const SearchBar = ({ searchQuery, onSearchChange, onSearchSubmit }: SearchBarProps) => {
-  const handleSearch = () => {
-    onSearchSubmit(new Event('submit') as unknown as React.FormEvent);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange(e.target.value);
-  };
-
   return (
-    <div className="hidden md:flex flex-1 max-w-3xl mx-8">
-      <div className="flex w-full">
-        <select 
-          className="h-full py-2 pl-4 pr-8 bg-white border-r rounded-l-md focus:outline-none text-sm"
-          defaultValue="all"
+    <form onSubmit={onSearchSubmit} className="hidden md:flex items-center flex-1 max-w-xl mx-4">
+      <div className="relative flex-1">
+        <Input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pr-10 focus-visible:ring-primary"
+        />
+        <Button 
+          type="submit" 
+          size="icon"
+          variant="ghost"
+          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent hover:text-primary"
         >
-          <option value="all">All</option>
-          <option value="products">Products</option>
-          <option value="vendors">Vendors</option>
-        </select>
-        <div className="flex-1 flex">
-          <SearchInput
-            value={searchQuery}
-            onChange={handleChange}
-            onSearch={handleSearch}
-            placeholder="I'm shopping for..."
-            className="rounded-none border-0 focus-visible:ring-0"
-          />
-        </div>
+          <Search className="h-5 w-5" />
+        </Button>
       </div>
-    </div>
+    </form>
   );
 };
