@@ -6,8 +6,19 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   base: "/",
   server: {
-    host: "::",
-    port: 8080,
+    host: true,
+    port: 5173,
+    strictPort: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    }
+  },
+  preview: {
+    port: 5173,
+    strictPort: true,
+    host: true,
   },
   plugins: [
     react(),
@@ -18,12 +29,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    // Remove TypeScript build options that conflict with Vite
-    rollupOptions: {
-      output: {
-        manualChunks: undefined
-      }
-    }
-  }
 }));
