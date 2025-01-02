@@ -15,7 +15,7 @@ export const SubMenu = () => {
   console.log("SubMenu rendering");
 
   return (
-    <div className="border-t border-white/10 bg-[#F97316]/90 backdrop-blur-sm">
+    <div className="border-t border-white/10 bg-primary/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center h-12">
           <CategoryDropdown />

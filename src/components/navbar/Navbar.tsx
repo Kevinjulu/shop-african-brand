@@ -48,7 +48,7 @@ export const Navbar = () => {
   return (
     <header 
       className={cn(
-        "w-full bg-[#F97316] transition-all duration-300 border-b border-[#F97316]/20",
+        "w-full bg-primary transition-all duration-300 border-b border-primary/20",
         isSticky && "fixed top-0 left-0 right-0 shadow-md z-50"
       )}
     >

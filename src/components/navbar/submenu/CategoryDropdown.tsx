@@ -40,7 +40,7 @@ export const CategoryDropdown = () => {
             <DropdownMenuItem key={category.name} asChild>
               <Link
                 to={category.path}
-                className="flex items-center justify-between w-full py-2.5 px-4 text-gray-700 hover:bg-[#F97316]/10 hover:text-[#F97316] transition-colors rounded-md"
+                className="flex items-center justify-between w-full py-2.5 px-4 text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors rounded-md"
               >
                 <span className="font-medium">{category.name}</span>
                 <ArrowRight className="w-4 h-4 opacity-50" />
