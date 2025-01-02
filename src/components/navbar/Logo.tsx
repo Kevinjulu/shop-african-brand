@@ -9,11 +9,11 @@ export const Logo = () => {
       className="flex-shrink-0 md:flex-none w-full md:w-auto flex justify-center md:justify-start"
       aria-label="Home"
     >
-      <img 
-        src="/logo.svg"
-        alt="Shop African Brands" 
-        className="h-12 w-auto object-contain drop-shadow-sm transition-all duration-300 hover:drop-shadow-md"
-      />
+      <div className="text-2xl font-bold flex items-center">
+        <span className="text-black">shop</span>
+        <span className="text-[#C41E3A] ml-1">AFRICAN</span>
+        <span className="text-black text-sm ml-1 mt-auto mb-1">brands</span>
+      </div>
     </Link>
   );
 };
