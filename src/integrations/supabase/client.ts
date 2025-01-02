@@ -25,7 +25,9 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Add global error handler
-supabase.auth.onError((error) => {
-  console.error('Supabase error:', error);
+// Add global error handling through auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'ERROR') {
+    console.error('Supabase auth error:', session?.error);
+  }
 });
