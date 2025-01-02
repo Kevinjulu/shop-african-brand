@@ -19,10 +19,14 @@ export const supabase = createClient<Database>(
         'Accept': 'application/json',
       },
     },
+    // Add default error handler through the client options
+    db: {
+      schema: 'public'
+    },
   }
 );
 
-// Add error handling for failed requests
-supabase.handleFailedRequest = (error: any) => {
+// Add error logging middleware
+supabase.rest.on('error', (error) => {
   console.error('Supabase request failed:', error);
-};
+});
