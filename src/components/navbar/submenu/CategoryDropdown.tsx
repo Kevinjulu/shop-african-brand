@@ -24,7 +24,7 @@ export const CategoryDropdown = () => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="h-10 px-4 gap-2 hover:bg-black/10 hover:text-black font-medium"
+          className="h-10 px-4 gap-2 text-white hover:bg-white/10 hover:text-white font-medium"
         >
           <span>Browse Categories</span>
           <ChevronDown className="h-4 w-4" />
@@ -40,7 +40,7 @@ export const CategoryDropdown = () => {
             <DropdownMenuItem key={category.name} asChild>
               <Link
                 to={category.path}
-                className="flex items-center justify-between w-full py-2.5 px-4 text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors rounded-md"
+                className="flex items-center justify-between w-full py-2.5 px-4 text-gray-700 hover:bg-[#F97316]/10 hover:text-[#F97316] transition-colors rounded-md"
               >
                 <span className="font-medium">{category.name}</span>
                 <ArrowRight className="w-4 h-4 opacity-50" />

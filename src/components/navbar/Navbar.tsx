@@ -48,12 +48,12 @@ export const Navbar = () => {
   return (
     <header 
       className={cn(
-        "w-full bg-white transition-all duration-300 border-b border-gray-100",
+        "w-full bg-[#F97316] transition-all duration-300 border-b border-[#F97316]/20",
         isSticky && "fixed top-0 left-0 right-0 shadow-md z-50"
       )}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 bg-white">
+        <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Logo />
           </div>

@@ -28,7 +28,7 @@ export const CountrySelector = () => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="h-8 px-3 gap-1.5 hover:bg-black/10 hover:text-black font-medium text-sm"
+          className="h-8 px-3 gap-1.5 text-white hover:bg-white/10 hover:text-white font-medium text-sm"
         >
           <Globe className="h-4 w-4" />
           <span>Visit Country</span>
@@ -45,7 +45,7 @@ export const CountrySelector = () => {
             <DropdownMenuItem key={country.code} asChild>
               <Link
                 to={`/products?country=${country.code}`}
-                className="flex items-center w-full py-2 px-3 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                className="flex items-center w-full py-2 px-3 text-sm text-gray-700 hover:bg-[#F97316]/10 hover:text-[#F97316] transition-colors"
               >
                 <span className="font-medium">{country.name}</span>
               </Link>

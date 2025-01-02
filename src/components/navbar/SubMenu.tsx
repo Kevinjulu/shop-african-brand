@@ -15,7 +15,7 @@ export const SubMenu = () => {
   console.log("SubMenu rendering");
 
   return (
-    <div className="border-t border-gray-100 bg-white">
+    <div className="border-t border-white/10 bg-[#F97316]/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center h-12">
           <CategoryDropdown />
@@ -25,7 +25,7 @@ export const SubMenu = () => {
                 <li key={item.path}>
                   <Link 
                     to={item.path} 
-                    className="text-sm hover:text-primary transition-colors font-medium"
+                    className="text-sm text-white hover:text-white/80 transition-colors font-medium tracking-wide px-2 py-1 rounded-md hover:bg-white/10"
                   >
                     {item.label}
                   </Link>
