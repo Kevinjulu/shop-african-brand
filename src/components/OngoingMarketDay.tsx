@@ -76,45 +76,6 @@ export const OngoingMarketDay = () => {
     return () => clearInterval(timer);
   }, [activeMarket]);
 
-  const products = [
-    {
-      id: "550e8400-e29b-41d4-a716-446655440012",
-      name: "Bulk Maasai Beaded Necklaces (50 pieces)",
-      originalPrice: 999.99,
-      discountedPrice: 799.99,
-      image: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800&auto=format&fit=crop&q=60",
-      discount: "20%",
-      moq: 50
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440013",
-      name: "Wholesale African Print Fabric Bundle (100 yards)",
-      originalPrice: 1499.99,
-      discountedPrice: 1199.99,
-      image: "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&auto=format&fit=crop&q=60",
-      discount: "20%",
-      moq: 100
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440014",
-      name: "Traditional Wooden Crafts Set (25 pieces)",
-      originalPrice: 749.99,
-      discountedPrice: 599.99,
-      image: "https://images.unsplash.com/photo-1592837613828-c36c1d0ec7e9?w=800&auto=format&fit=crop&q=60",
-      discount: "20%",
-      moq: 25
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440015",
-      name: "Handwoven Basket Collection (30 pieces)",
-      originalPrice: 899.99,
-      discountedPrice: 719.99,
-      image: "https://images.unsplash.com/photo-1632171927336-696d86fd27c8?w=800&auto=format&fit=crop&q=60",
-      discount: "20%",
-      moq: 30
-    },
-  ];
-
   if (loading) {
     return (
       <div className="py-4 md:py-8 bg-cream">
@@ -147,7 +108,44 @@ export const OngoingMarketDay = () => {
           timeLeft={timeLeft}
           marketId={activeMarket.id}
         />
-        <ProductSlider products={products} />
+        <ProductSlider products={[
+          {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            name: "Bulk Maasai Beaded Necklaces (50 pieces)",
+            originalPrice: 999.99,
+            discountedPrice: 799.99,
+            image: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800&auto=format&fit=crop&q=60",
+            discount: "20%",
+            moq: 50
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440013",
+            name: "Wholesale African Print Fabric Bundle (100 yards)",
+            originalPrice: 1499.99,
+            discountedPrice: 1199.99,
+            image: "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&auto=format&fit=crop&q=60",
+            discount: "20%",
+            moq: 100
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440014",
+            name: "Traditional Wooden Crafts Set (25 pieces)",
+            originalPrice: 749.99,
+            discountedPrice: 599.99,
+            image: "https://images.unsplash.com/photo-1592837613828-c36c1d0ec7e9?w=800&auto=format&fit=crop&q=60",
+            discount: "20%",
+            moq: 25
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440015",
+            name: "Handwoven Basket Collection (30 pieces)",
+            originalPrice: 899.99,
+            discountedPrice: 719.99,
+            image: "https://images.unsplash.com/photo-1632171927336-696d86fd27c8?w=800&auto=format&fit=crop&q=60",
+            discount: "20%",
+            moq: 30
+          },
+        ]} />
       </div>
     </section>
   );
