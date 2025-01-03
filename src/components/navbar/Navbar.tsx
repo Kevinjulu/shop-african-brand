@@ -7,6 +7,8 @@ import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "../MobileNav";
 import { cn } from "@/lib/utils";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,12 +66,34 @@ export const Navbar = () => {
             onSearchSubmit={handleSearch}
           />
           
-          <NavIcons />
+          <div className="flex items-center gap-2">
+            <NavIcons />
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="p-2 text-white hover:bg-primary-dark rounded-full">
+                    <Menu className="h-6 w-6" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                  <nav className="flex flex-col gap-4">
+                    <a href="/" className="px-4 py-2 hover:bg-primary/10 rounded-md">Home</a>
+                    <a href="/products" className="px-4 py-2 hover:bg-primary/10 rounded-md">Products</a>
+                    <a href="/new-arrivals" className="px-4 py-2 hover:bg-primary/10 rounded-md">New Arrivals</a>
+                    <a href="/best-sellers" className="px-4 py-2 hover:bg-primary/10 rounded-md">Best Sellers</a>
+                    <a href="/on-sale" className="px-4 py-2 hover:bg-primary/10 rounded-md">On Sale</a>
+                    <a href="/traditional" className="px-4 py-2 hover:bg-primary/10 rounded-md">Traditional</a>
+                    <a href="/stores" className="px-4 py-2 hover:bg-primary/10 rounded-md">Stores</a>
+                    <a href="/about" className="px-4 py-2 hover:bg-primary/10 rounded-md">About Us</a>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            )}
+          </div>
         </div>
       </div>
 
       {!isMobile && showSubmenu && <SubMenu />}
-      <MobileNav />
     </header>
   );
 };
