@@ -11,6 +11,8 @@ export const Layout = () => {
         <Outlet />
       </main>
       <Footer />
+      {/* Add padding at bottom for mobile navigation */}
+      <div className="h-16 md:h-0" />
     </div>
   );
 };

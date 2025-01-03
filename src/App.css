@@ -1,7 +1,7 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
 }
 
@@ -39,4 +39,16 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Remove extra spacing in mobile view */
+@media (max-width: 768px) {
+  #root {
+    padding: 0;
+  }
+  
+  .hero-section {
+    margin-top: 0;
+    padding-top: 0;
+  }
 }
