@@ -5,26 +5,23 @@ import {
 } from "@/components/ui/carousel";
 import { ProductCard } from "./ProductCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
+
+interface Product {
+  id: string;
+  name: string;
+  originalPrice: number;
+  discountedPrice: number;
+  image: string;
+  discount: string;
+  moq: number;
+}
 
 interface ProductSliderProps {
-  products: Array<{
-    id: string;
-    name: string;
-    originalPrice: number;
-    discountedPrice: number;
-    image: string;
-    discount: string;
-    moq: number;
-  }>;
+  products: Product[];
 }
 
 export const ProductSlider = ({ products }: ProductSliderProps) => {
   const isMobile = useIsMobile();
-  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
-    delay: 3000,
-    stopOnInteraction: true,
-  });
 
   if (!isMobile) {
     return (
@@ -38,9 +35,6 @@ export const ProductSlider = ({ products }: ProductSliderProps) => {
 
   return (
     <Carousel
-      setApi={onApiChange}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className="w-full"
       opts={{
         align: "start",

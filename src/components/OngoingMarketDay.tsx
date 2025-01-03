@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketHeader } from "./ongoing-market/MarketHeader";
 import { ProductSlider } from "./ongoing-market/ProductSlider";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface Marketplace {
   id: string;
@@ -12,8 +13,18 @@ interface Marketplace {
   end_market_date: string;
 }
 
+interface MarketProduct {
+  id: string;
+  name: string;
+  price: number;
+  discounted_price?: number;
+  image_url: string;
+  minimum_order_quantity: number;
+}
+
 export const OngoingMarketDay = () => {
   const [activeMarket, setActiveMarket] = useState<Marketplace | null>(null);
+  const [marketProducts, setMarketProducts] = useState<MarketProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
@@ -25,21 +36,57 @@ export const OngoingMarketDay = () => {
     const fetchActiveMarket = async () => {
       try {
         console.log("Fetching active marketplace...");
-        const { data, error } = await supabase
+        const { data: marketData, error: marketError } = await supabase
           .from('marketplaces')
           .select('*')
           .gte('end_market_date', new Date().toISOString())
           .order('next_market_date', { ascending: true })
           .limit(1)
-          .maybeSingle();
+          .single();
 
-        if (error) {
-          console.error('Error fetching marketplace:', error);
+        if (marketError) {
+          console.error('Error fetching marketplace:', marketError);
           return;
         }
 
-        console.log('Active market data:', data);
-        setActiveMarket(data);
+        if (marketData) {
+          console.log('Active market found:', marketData);
+          setActiveMarket(marketData);
+
+          // Fetch products for this market
+          const { data: productsData, error: productsError } = await supabase
+            .from('products')
+            .select(`
+              id,
+              name,
+              price,
+              image_url,
+              minimum_order_quantity,
+              product_tier_pricing (
+                price_per_unit
+              )
+            `)
+            .eq('status', 'published')
+            .limit(10);
+
+          if (productsError) {
+            console.error('Error fetching products:', productsError);
+            return;
+          }
+
+          const formattedProducts = productsData.map(product => ({
+            id: product.id,
+            name: product.name,
+            originalPrice: product.price,
+            discountedPrice: product.product_tier_pricing?.[0]?.price_per_unit || product.price * 0.8,
+            image: product.image_url || "https://via.placeholder.com/400",
+            discount: "20%",
+            moq: product.minimum_order_quantity || 1
+          }));
+
+          console.log('Market products:', formattedProducts);
+          setMarketProducts(formattedProducts);
+        }
       } catch (error) {
         console.error('Error in fetchActiveMarket:', error);
       } finally {
@@ -80,21 +127,15 @@ export const OngoingMarketDay = () => {
     return (
       <div className="py-4 md:py-8 bg-cream">
         <div className="container mx-auto px-3 md:px-4">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-64 bg-gray-200 rounded"></div>
-              ))}
-            </div>
+          <div className="flex justify-center items-center min-h-[200px]">
+            <LoadingSpinner />
           </div>
         </div>
       </div>
     );
   }
 
-  if (!activeMarket) {
+  if (!activeMarket || marketProducts.length === 0) {
     return null;
   }
 
@@ -108,44 +149,7 @@ export const OngoingMarketDay = () => {
           timeLeft={timeLeft}
           marketId={activeMarket.id}
         />
-        <ProductSlider products={[
-          {
-            id: "550e8400-e29b-41d4-a716-446655440012",
-            name: "Bulk Maasai Beaded Necklaces (50 pieces)",
-            originalPrice: 999.99,
-            discountedPrice: 799.99,
-            image: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800&auto=format&fit=crop&q=60",
-            discount: "20%",
-            moq: 50
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440013",
-            name: "Wholesale African Print Fabric Bundle (100 yards)",
-            originalPrice: 1499.99,
-            discountedPrice: 1199.99,
-            image: "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&auto=format&fit=crop&q=60",
-            discount: "20%",
-            moq: 100
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440014",
-            name: "Traditional Wooden Crafts Set (25 pieces)",
-            originalPrice: 749.99,
-            discountedPrice: 599.99,
-            image: "https://images.unsplash.com/photo-1592837613828-c36c1d0ec7e9?w=800&auto=format&fit=crop&q=60",
-            discount: "20%",
-            moq: 25
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440015",
-            name: "Handwoven Basket Collection (30 pieces)",
-            originalPrice: 899.99,
-            discountedPrice: 719.99,
-            image: "https://images.unsplash.com/photo-1632171927336-696d86fd27c8?w=800&auto=format&fit=crop&q=60",
-            discount: "20%",
-            moq: 30
-          },
-        ]} />
+        <ProductSlider products={marketProducts} />
       </div>
     </section>
   );
