@@ -1,21 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { Product } from "@/types/product";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image_url: string;
-}
+import { CartItem } from "@/types/cart";
+import { useCartOperations } from "@/hooks/cart/useCartOperations";
+import { useCartSync } from "@/hooks/cart/useCartSync";
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, quantity: number) => Promise<void>;
+  addToCart: (product: any, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
@@ -31,170 +23,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('cartSessionId', sessionId);
-    fetchCartItems();
+  }, [sessionId]);
 
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel('cart-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'cart_items',
-          filter: user 
-            ? `user_id=eq.${user.id}` 
-            : `session_id=eq.${sessionId}`
-        },
-        () => {
-          fetchCartItems();
-        }
-      )
-      .subscribe();
+  const {
+    fetchCartItems,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart
+  } = useCartOperations(user, sessionId);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, sessionId]);
-
-  const fetchCartItems = async () => {
-    try {
-      console.log("Fetching cart items for:", user?.id ? `user ${user.id}` : `session ${sessionId}`);
-      
-      let query = supabase
-        .from('cart_items')
-        .select(`
-          *,
-          product:products (
-            name,
-            price,
-            image_url
-          )
-        `);
-
-      // Add the appropriate filter based on whether user is logged in
-      if (user) {
-        query = query.eq('user_id', user.id);
-      } else {
-        query = query.eq('session_id', sessionId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      const cartItems = data.map(item => ({
-        id: item.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-        image_url: item.product.image_url
-      }));
-
-      setItems(cartItems);
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
-      toast.error('Failed to fetch cart items');
-    }
+  const handleCartUpdate = async () => {
+    const items = await fetchCartItems();
+    setItems(items);
   };
 
-  const addToCart = async (product: Product, quantity: number) => {
-    try {
-      const { data, error } = await supabase
-        .from('cart_items')
-        .upsert({
-          user_id: user?.id || null,
-          session_id: !user ? sessionId : null,
-          product_id: product.id,
-          quantity: quantity,
-        })
-        .select()
-        .single();
+  useEffect(() => {
+    handleCartUpdate();
+  }, [user]);
 
-      if (error) throw error;
-      toast.success(`Added ${product.name} to cart`);
-      await fetchCartItems();
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error('Failed to add item to cart');
-    }
-  };
-
-  const removeFromCart = async (productId: string) => {
-    try {
-      let query = supabase
-        .from('cart_items')
-        .delete();
-
-      // Add the appropriate filter based on whether user is logged in
-      if (user) {
-        query = query.eq('user_id', user.id);
-      } else {
-        query = query.eq('session_id', sessionId);
-      }
-
-      query = query.eq('product_id', productId);
-
-      const { error } = await query;
-
-      if (error) throw error;
-      toast.success('Item removed from cart');
-      await fetchCartItems();
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-      toast.error('Failed to remove item from cart');
-    }
-  };
-
-  const updateQuantity = async (productId: string, quantity: number) => {
-    if (quantity < 1) return;
-    try {
-      let query = supabase
-        .from('cart_items')
-        .update({ quantity });
-
-      // Add the appropriate filter based on whether user is logged in
-      if (user) {
-        query = query.eq('user_id', user.id);
-      } else {
-        query = query.eq('session_id', sessionId);
-      }
-
-      query = query.eq('product_id', productId);
-
-      const { error } = await query;
-
-      if (error) throw error;
-      await fetchCartItems();
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      toast.error('Failed to update quantity');
-    }
-  };
-
-  const clearCart = async () => {
-    try {
-      let query = supabase
-        .from('cart_items')
-        .delete();
-
-      // Add the appropriate filter based on whether user is logged in
-      if (user) {
-        query = query.eq('user_id', user.id);
-      } else {
-        query = query.eq('session_id', sessionId);
-      }
-
-      const { error } = await query;
-
-      if (error) throw error;
-      toast.success('Cart cleared');
-      await fetchCartItems();
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      toast.error('Failed to clear cart');
-    }
-  };
+  // Set up real-time sync
+  useCartSync(user, sessionId, handleCartUpdate);
 
   const itemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
