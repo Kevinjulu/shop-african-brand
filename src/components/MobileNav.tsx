@@ -1,5 +1,5 @@
 import { Home, Search, Store, ShoppingCart, User } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/AuthProvider";
 import { useCart } from "@/contexts/CartContext";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 export const MobileNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { itemsCount } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,7 +51,7 @@ export const MobileNav = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`;
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery("");
     } else {
@@ -70,14 +71,14 @@ export const MobileNav = () => {
                 to={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center flex-1 h-full",
-                  isActive ? "text-[#FB923C]" : "text-gray-500"
+                  isActive ? "text-primary" : "text-gray-500"
                 )}
                 onClick={item.onClick}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="text-xs mt-1">{item.label}</span>
                 {item.count > 0 && (
-                  <span className="absolute -top-1 right-1/4 bg-[#FB923C] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-1 right-1/4 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                     {item.count}
                   </span>
                 )}

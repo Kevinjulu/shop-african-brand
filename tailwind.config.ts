@@ -25,9 +25,9 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#FB923C", // Main orange color
-          dark: "#F97316",    // Darker shade
-          light: "#FED7AA",   // Lighter shade
+          DEFAULT: "#FFA500", // Updated to warmer yellow-orange
+          dark: "#F49320",    // Darker shade
+          light: "#FFB733",   // Lighter shade
         },
         secondary: {
           DEFAULT: "#000000",
@@ -35,9 +35,9 @@ export default {
           light: "#333333",
         },
         accent: {
-          DEFAULT: "#FB923C", // Using same orange for consistency
-          dark: "#F97316",
-          light: "#FED7AA",
+          DEFAULT: "#FFA500", // Matching primary for consistency
+          dark: "#F49320",
+          light: "#FFB733",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -48,7 +48,7 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         cream: "#FFF9E6",
-        "mart-orange": "#FB923C", // Updated to match primary
+        "mart-orange": "#FFA500",
         "mart-black": "#000000",
       },
       borderRadius: {

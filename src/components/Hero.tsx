@@ -18,7 +18,7 @@ export const Hero = () => {
 
   return (
     <div className="bg-cream">
-      <div className="container mx-auto px-3 md:px-4 py-3 md:py-6">
+      <div className="container mx-auto px-3 md:px-4 py-2 md:py-6">
         <div className="grid grid-cols-12 gap-2 md:gap-4">
           <div className="col-span-12 lg:col-span-9">
             <Carousel 
