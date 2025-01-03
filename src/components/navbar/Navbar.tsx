@@ -5,7 +5,6 @@ import { SearchBar } from "./SearchBar";
 import { NavIcons } from "./NavIcons";
 import { SubMenu } from "./SubMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { MobileNav } from "../MobileNav";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -47,10 +46,21 @@ export const Navbar = () => {
 
   console.log("Navbar rendering, isSticky:", isSticky, "pathname:", location.pathname);
 
+  const mobileMenuItems = [
+    { label: "Home", path: "/" },
+    { label: "Products", path: "/products" },
+    { label: "New Arrivals", path: "/new-arrivals" },
+    { label: "Best Sellers", path: "/best-sellers" },
+    { label: "On Sale", path: "/on-sale" },
+    { label: "Traditional", path: "/traditional" },
+    { label: "Stores", path: "/stores" },
+    { label: "About Us", path: "/about" },
+  ];
+
   return (
     <header 
       className={cn(
-        "w-full bg-primary transition-all duration-300 border-b border-primary/20",
+        "w-full bg-[#FB923C] transition-all duration-300 border-b border-primary/20",
         isSticky && "fixed top-0 left-0 right-0 shadow-md z-50"
       )}
     >
@@ -71,20 +81,23 @@ export const Navbar = () => {
             {isMobile && (
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="p-2 text-white hover:bg-primary-dark rounded-full">
+                  <button className="p-2 text-white hover:bg-primary-dark rounded-full ml-2">
                     <Menu className="h-6 w-6" />
                   </button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                  <nav className="flex flex-col gap-4">
-                    <a href="/" className="px-4 py-2 hover:bg-primary/10 rounded-md">Home</a>
-                    <a href="/products" className="px-4 py-2 hover:bg-primary/10 rounded-md">Products</a>
-                    <a href="/new-arrivals" className="px-4 py-2 hover:bg-primary/10 rounded-md">New Arrivals</a>
-                    <a href="/best-sellers" className="px-4 py-2 hover:bg-primary/10 rounded-md">Best Sellers</a>
-                    <a href="/on-sale" className="px-4 py-2 hover:bg-primary/10 rounded-md">On Sale</a>
-                    <a href="/traditional" className="px-4 py-2 hover:bg-primary/10 rounded-md">Traditional</a>
-                    <a href="/stores" className="px-4 py-2 hover:bg-primary/10 rounded-md">Stores</a>
-                    <a href="/about" className="px-4 py-2 hover:bg-primary/10 rounded-md">About Us</a>
+                <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
+                  <nav className="h-full bg-white">
+                    <div className="px-6 py-8 space-y-6">
+                      {mobileMenuItems.map((item) => (
+                        <a
+                          key={item.path}
+                          href={item.path}
+                          className="block py-3 text-lg font-medium text-gray-900 hover:text-primary border-b border-gray-100"
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                    </div>
                   </nav>
                 </SheetContent>
               </Sheet>
