@@ -13,15 +13,6 @@ interface Marketplace {
   end_market_date: string;
 }
 
-interface MarketProduct {
-  id: string;
-  name: string;
-  price: number;
-  discounted_price?: number;
-  image_url: string;
-  minimum_order_quantity: number;
-}
-
 interface FormattedProduct {
   id: string;
   name: string;
@@ -36,6 +27,7 @@ export const OngoingMarketDay = () => {
   const [activeMarket, setActiveMarket] = useState<Marketplace | null>(null);
   const [marketProducts, setMarketProducts] = useState<FormattedProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -52,53 +44,61 @@ export const OngoingMarketDay = () => {
           .gte('end_market_date', new Date().toISOString())
           .order('next_market_date', { ascending: true })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (marketError) {
           console.error('Error fetching marketplace:', marketError);
+          setError('Failed to fetch marketplace data');
           return;
         }
 
-        if (marketData) {
-          console.log('Active market found:', marketData);
-          setActiveMarket(marketData);
-
-          // Fetch products for this market
-          const { data: productsData, error: productsError } = await supabase
-            .from('products')
-            .select(`
-              id,
-              name,
-              price,
-              image_url,
-              minimum_order_quantity,
-              product_tier_pricing (
-                price_per_unit
-              )
-            `)
-            .eq('status', 'published')
-            .limit(10);
-
-          if (productsError) {
-            console.error('Error fetching products:', productsError);
-            return;
-          }
-
-          const formattedProducts: FormattedProduct[] = productsData.map(product => ({
-            id: product.id,
-            name: product.name,
-            originalPrice: product.price,
-            discountedPrice: product.product_tier_pricing?.[0]?.price_per_unit || product.price * 0.8,
-            image: product.image_url || "https://via.placeholder.com/400",
-            discount: "20%",
-            moq: product.minimum_order_quantity || 1
-          }));
-
-          console.log('Market products:', formattedProducts);
-          setMarketProducts(formattedProducts);
+        if (!marketData) {
+          console.log('No active market found');
+          setError('No active market at the moment');
+          setLoading(false);
+          return;
         }
+
+        console.log('Active market found:', marketData);
+        setActiveMarket(marketData);
+
+        // Fetch products
+        const { data: productsData, error: productsError } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            price,
+            image_url,
+            minimum_order_quantity,
+            product_tier_pricing (
+              price_per_unit
+            )
+          `)
+          .eq('status', 'published')
+          .limit(10);
+
+        if (productsError) {
+          console.error('Error fetching products:', productsError);
+          setError('Failed to fetch products');
+          return;
+        }
+
+        const formattedProducts: FormattedProduct[] = productsData.map(product => ({
+          id: product.id,
+          name: product.name,
+          originalPrice: product.price,
+          discountedPrice: product.product_tier_pricing?.[0]?.price_per_unit || product.price * 0.8,
+          image: product.image_url || "https://via.placeholder.com/400",
+          discount: "20%",
+          moq: product.minimum_order_quantity || 1
+        }));
+
+        console.log('Market products:', formattedProducts);
+        setMarketProducts(formattedProducts);
       } catch (error) {
         console.error('Error in fetchActiveMarket:', error);
+        setError('An unexpected error occurred');
       } finally {
         setLoading(false);
       }
@@ -139,6 +139,18 @@ export const OngoingMarketDay = () => {
         <div className="container mx-auto px-3 md:px-4">
           <div className="flex justify-center items-center min-h-[200px]">
             <LoadingSpinner />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-4 md:py-8 bg-cream">
+        <div className="container mx-auto px-3 md:px-4">
+          <div className="text-center text-gray-600">
+            {error}
           </div>
         </div>
       </div>
