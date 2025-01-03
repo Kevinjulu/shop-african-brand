@@ -17,6 +17,7 @@ import Wishlist from "@/pages/Wishlist";
 import NewArrivals from "@/pages/NewArrivals";
 import Traditional from "@/pages/Traditional";
 import Auth from "@/pages/Auth";
+import Checkout from "@/pages/Checkout";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
   {
     path: "/cart",
     element: <Layout><Cart /></Layout>,
+  },
+  {
+    path: "/checkout",
+    element: <Layout><Checkout /></Layout>,
   },
   {
     path: "/best-sellers",
