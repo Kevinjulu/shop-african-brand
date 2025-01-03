@@ -24,7 +24,7 @@ const withSuspense = (Component: React.ComponentType) => {
 export const Routes = () => {
   return (
     <RouterRoutes>
-      <Route path="/" element={<Layout />}>
+      <Route element={<Layout />}>
         <Route index element={withSuspense(Home)} />
         <Route path="products" element={withSuspense(Products)} />
         <Route path="product/:id" element={withSuspense(ProductDetail)} />
