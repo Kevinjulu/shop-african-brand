@@ -781,6 +781,50 @@ export type Database = {
           },
         ]
       }
+      order_notifications: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          order_id: string | null
+          recipient_email: string
+          sent_at: string | null
+          status: string | null
+          subject: string
+          type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          order_id?: string | null
+          recipient_email: string
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          type: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          order_id?: string | null
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_tracking: {
         Row: {
           carrier: string | null
@@ -830,6 +874,9 @@ export type Database = {
           created_at: string
           estimated_delivery: string | null
           id: string
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: string | null
           shipping_address_id: string | null
           shipping_method: string | null
           status: string
@@ -842,6 +889,9 @@ export type Database = {
           created_at?: string
           estimated_delivery?: string | null
           id?: string
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           shipping_address_id?: string | null
           shipping_method?: string | null
           status?: string
@@ -854,6 +904,9 @@ export type Database = {
           created_at?: string
           estimated_delivery?: string | null
           id?: string
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           shipping_address_id?: string | null
           shipping_method?: string | null
           status?: string
