@@ -13,10 +13,6 @@ export interface AuthState {
   error: Error | null;
 }
 
-export interface AuthContextType extends AuthState {
-  signOut: () => Promise<void>;
-}
-
 export interface Profile {
   id: string;
   username?: string;
@@ -24,4 +20,11 @@ export interface Profile {
   avatar_url?: string;
   email?: string;
   created_at: string;
+}
+
+export interface AuthContextType extends AuthState {
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<void>;
+  profile: Profile | null;
 }

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuthState } from "@/hooks/useAuthState";
-import type { AuthContextType } from "@/types/auth";
+import type { AuthContextType, Profile } from "@/types/auth";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 const AuthContext = createContext<AuthContextType>({ 
@@ -13,6 +13,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   resetPassword: async () => {},
   updateProfile: async () => {},
+  profile: null
 });
 
 export const useAuth = () => {
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, loading, error } = useAuthState();
   const navigate = useNavigate();
   const location = useLocation();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     if (user) {
