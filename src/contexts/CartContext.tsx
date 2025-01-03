@@ -59,7 +59,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const fetchCartItems = async () => {
     try {
-      const { data, error } = await supabase
+      console.log("Fetching cart items for:", user?.id ? `user ${user.id}` : `session ${sessionId}`);
+      
+      let query = supabase
         .from('cart_items')
         .select(`
           *,
@@ -68,8 +70,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             price,
             image_url
           )
-        `)
-        .or(`user_id.eq.${user?.id},session_id.eq.${sessionId}`);
+        `);
+
+      // Add the appropriate filter based on whether user is logged in
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        query = query.eq('session_id', sessionId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -93,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from('cart_items')
         .upsert({
-          user_id: user?.id,
+          user_id: user?.id || null,
           session_id: !user ? sessionId : null,
           product_id: product.id,
           quantity: quantity,
@@ -112,11 +122,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromCart = async (productId: string) => {
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('cart_items')
-        .delete()
-        .or(`user_id.eq.${user?.id},session_id.eq.${sessionId}`)
-        .eq('product_id', productId);
+        .delete();
+
+      // Add the appropriate filter based on whether user is logged in
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        query = query.eq('session_id', sessionId);
+      }
+
+      query = query.eq('product_id', productId);
+
+      const { error } = await query;
 
       if (error) throw error;
       toast.success('Item removed from cart');
@@ -130,11 +149,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQuantity = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('cart_items')
-        .update({ quantity })
-        .or(`user_id.eq.${user?.id},session_id.eq.${sessionId}`)
-        .eq('product_id', productId);
+        .update({ quantity });
+
+      // Add the appropriate filter based on whether user is logged in
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        query = query.eq('session_id', sessionId);
+      }
+
+      query = query.eq('product_id', productId);
+
+      const { error } = await query;
 
       if (error) throw error;
       await fetchCartItems();
@@ -146,10 +174,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = async () => {
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('cart_items')
-        .delete()
-        .or(`user_id.eq.${user?.id},session_id.eq.${sessionId}`);
+        .delete();
+
+      // Add the appropriate filter based on whether user is logged in
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        query = query.eq('session_id', sessionId);
+      }
+
+      const { error } = await query;
 
       if (error) throw error;
       toast.success('Cart cleared');
