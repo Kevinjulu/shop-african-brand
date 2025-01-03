@@ -27,7 +27,22 @@ export const useCartOperations = (user: any, sessionId: string) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data as CartItem[];
+
+      // Transform the data to match CartItem interface
+      const cartItems: CartItem[] = data.map(item => ({
+        id: item.id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        image_url: item.product.image_url,
+        product_id: item.product_id,
+        user_id: item.user_id,
+        session_id: item.session_id,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }));
+
+      return cartItems;
     } catch (error) {
       console.error('Error fetching cart:', error);
       toast.error('Failed to fetch cart items');
@@ -37,20 +52,17 @@ export const useCartOperations = (user: any, sessionId: string) => {
 
   const addToCart = async (product: any, quantity: number) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('cart_items')
         .upsert({
           user_id: user?.id || null,
           session_id: !user ? sessionId : null,
           product_id: product.id,
           quantity: quantity,
-        })
-        .select()
-        .single();
+        });
 
       if (error) throw error;
       toast.success('Added to cart');
-      return data;
     } catch (error) {
       console.error('Error adding to cart:', error);
       toast.error('Failed to add item to cart');
@@ -100,7 +112,6 @@ export const useCartOperations = (user: any, sessionId: string) => {
       const { error } = await query;
 
       if (error) throw error;
-      return await fetchCartItems();
     } catch (error) {
       console.error('Error updating quantity:', error);
       toast.error('Failed to update quantity');

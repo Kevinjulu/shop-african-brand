@@ -27,10 +27,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const {
     fetchCartItems,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart
+    addToCart: addToCartOp,
+    removeFromCart: removeFromCartOp,
+    updateQuantity: updateQuantityOp,
+    clearCart: clearCartOp
   } = useCartOperations(user, sessionId);
 
   const handleCartUpdate = async () => {
@@ -44,6 +44,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Set up real-time sync
   useCartSync(user, sessionId, handleCartUpdate);
+
+  const addToCart = async (product: any, quantity: number) => {
+    await addToCartOp(product, quantity);
+    await handleCartUpdate();
+  };
+
+  const removeFromCart = async (productId: string) => {
+    await removeFromCartOp(productId);
+    await handleCartUpdate();
+  };
+
+  const updateQuantity = async (productId: string, quantity: number) => {
+    await updateQuantityOp(productId, quantity);
+    await handleCartUpdate();
+  };
+
+  const clearCart = async () => {
+    await clearCartOp();
+    await handleCartUpdate();
+  };
 
   const itemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
