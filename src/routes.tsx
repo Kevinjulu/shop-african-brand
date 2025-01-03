@@ -1,7 +1,7 @@
-import { lazy, Suspense } from "react";
-import { Routes as RouterRoutes, Route } from "react-router-dom";
-import { LoadingFallback } from "@/components/LoadingFallback";
+import { Route, Routes as RouterRoutes } from "react-router-dom";
+import { lazy } from "react";
 import { Layout } from "@/components/Layout";
+import { withSuspense } from "@/utils/withSuspense";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/Home"));
@@ -11,17 +11,14 @@ const Cart = lazy(() => import("@/pages/Cart"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
 const OrderHistory = lazy(() => import("@/pages/OrderHistory"));
 const Account = lazy(() => import("@/pages/Account"));
+const Wishlist = lazy(() => import("@/pages/Wishlist"));
+const About = lazy(() => import("@/pages/About"));
+const Contact = lazy(() => import("@/pages/Contact"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-const withSuspense = (Component: React.ComponentType) => {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Component />
-    </Suspense>
-  );
-};
-
 export const Routes = () => {
+  console.log("Routes rendering");
+  
   return (
     <RouterRoutes>
       <Route element={<Layout />}>
@@ -30,8 +27,11 @@ export const Routes = () => {
         <Route path="product/:id" element={withSuspense(ProductDetail)} />
         <Route path="cart" element={withSuspense(Cart)} />
         <Route path="checkout" element={withSuspense(Checkout)} />
-        <Route path="order-history" element={withSuspense(OrderHistory)} />
+        <Route path="orders" element={withSuspense(OrderHistory)} />
         <Route path="account" element={withSuspense(Account)} />
+        <Route path="wishlist" element={withSuspense(Wishlist)} />
+        <Route path="about" element={withSuspense(About)} />
+        <Route path="contact" element={withSuspense(Contact)} />
         <Route path="*" element={withSuspense(NotFound)} />
       </Route>
     </RouterRoutes>
