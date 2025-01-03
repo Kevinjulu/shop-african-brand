@@ -3,17 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Truck } from "lucide-react";
 import { FormattedPrice } from "@/components/common/FormattedPrice";
+import { Product } from "./ProductSlider";
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    name: string;
-    originalPrice: number;
-    discountedPrice: number;
-    image: string;
-    discount: string;
-    moq: number;
-  };
+  product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {

@@ -6,7 +6,7 @@ import {
 import { ProductCard } from "./ProductCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   originalPrice: number;

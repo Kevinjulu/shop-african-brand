@@ -22,9 +22,19 @@ interface MarketProduct {
   minimum_order_quantity: number;
 }
 
+interface FormattedProduct {
+  id: string;
+  name: string;
+  originalPrice: number;
+  discountedPrice: number;
+  image: string;
+  discount: string;
+  moq: number;
+}
+
 export const OngoingMarketDay = () => {
   const [activeMarket, setActiveMarket] = useState<Marketplace | null>(null);
-  const [marketProducts, setMarketProducts] = useState<MarketProduct[]>([]);
+  const [marketProducts, setMarketProducts] = useState<FormattedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
@@ -74,7 +84,7 @@ export const OngoingMarketDay = () => {
             return;
           }
 
-          const formattedProducts = productsData.map(product => ({
+          const formattedProducts: FormattedProduct[] = productsData.map(product => ({
             id: product.id,
             name: product.name,
             originalPrice: product.price,
