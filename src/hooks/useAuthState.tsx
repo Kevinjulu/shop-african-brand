@@ -10,23 +10,31 @@ export const useAuthState = () => {
   useEffect(() => {
     console.log("useAuthState: Initializing");
 
+    let mounted = true;
+
     const getInitialSession = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Error getting session:", sessionError);
-          setError(sessionError);
+          if (mounted) {
+            setError(sessionError);
+          }
           return;
         }
 
         console.log("Initial session check:", session?.user?.email);
-        setUser(session?.user || null);
+        if (mounted) {
+          setUser(session?.user || null);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error checking session:", error);
-        setError(error instanceof Error ? error : new Error('Unknown authentication error'));
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setError(error instanceof Error ? error : new Error('Unknown authentication error'));
+          setLoading(false);
+        }
       }
     };
 
@@ -37,14 +45,17 @@ export const useAuthState = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.email);
-        setUser(session?.user || null);
-        setLoading(false);
-        setError(null);
+        if (mounted) {
+          setUser(session?.user || null);
+          setLoading(false);
+          setError(null);
+        }
       }
     );
 
-    // Cleanup subscription on unmount
+    // Cleanup subscription and mounted flag on unmount
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);

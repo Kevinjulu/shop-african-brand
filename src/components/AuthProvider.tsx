@@ -1,9 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { AuthContextType, Profile } from "@/types/auth";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const AuthContext = createContext<AuthContextType>({ 
   user: null, 
@@ -27,59 +28,14 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { user, loading, error } = useAuthState();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    console.log("AuthProvider: Initializing");
-
-    const getInitialSession = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Error getting session:", sessionError);
-          setError(sessionError);
-          return;
-        }
-
-        setUser(session?.user || null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getInitialSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
-      
-      setUser(session?.user || null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      }
-      setLoading(false);
-      
-      if (event === 'SIGNED_OUT') {
-        navigate('/auth');
-      } else if (event === 'SIGNED_IN') {
-        const from = (location.state as any)?.from || '/';
-        navigate(from);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, location]);
+    if (user) {
+      fetchProfile(user.id);
+    }
+  }, [user]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -134,7 +90,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', user?.id);
 
       if (error) throw error;
-      await fetchProfile(user.id);
+      if (user) {
+        await fetchProfile(user.id);
+      }
       toast.success('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
