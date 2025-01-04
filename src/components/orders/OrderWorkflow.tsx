@@ -35,7 +35,15 @@ export const OrderWorkflow = ({ orderId, currentState, onStateChange }: OrderWor
         return;
       }
 
-      setWorkflowStates(data);
+      // Transform the data to match WorkflowState type
+      const transformedData: WorkflowState[] = data.map(state => ({
+        name: state.name,
+        description: state.description || '',
+        next_possible_states: state.next_possible_states as string[],
+        required_actions: state.required_actions as string[]
+      }));
+
+      setWorkflowStates(transformedData);
     };
 
     fetchWorkflowStates();

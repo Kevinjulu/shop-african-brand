@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { ChartBar, DollarSign, Users, TrendingUp } from "lucide-react";
+import { BarChart2, DollarSign, Users, TrendingUp } from "lucide-react";
 
 export const SalesReportDashboard = () => {
   const { data: salesData } = useQuery({
@@ -55,7 +55,7 @@ export const SalesReportDashboard = () => {
             <CardTitle className="text-sm font-medium">
               Total Orders
             </CardTitle>
-            <ChartBar className="h-4 w-4 text-muted-foreground" />
+            <BarChart2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
