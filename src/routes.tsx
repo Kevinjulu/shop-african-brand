@@ -54,6 +54,11 @@ const Contact = lazy(() => import("@/pages/Contact").catch(() => {
   return import("@/pages/NotFound");
 }));
 
+const Auth = lazy(() => import("@/pages/Auth").catch(() => {
+  console.error("Error loading Auth page");
+  return import("@/pages/NotFound");
+}));
+
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Wrap component with Suspense and error handling
@@ -79,6 +84,7 @@ export const Routes = () => {
         <Route path="wishlist" element={withSuspense(Wishlist)} />
         <Route path="about" element={withSuspense(About)} />
         <Route path="contact" element={withSuspense(Contact)} />
+        <Route path="auth" element={withSuspense(Auth)} />
         <Route path="*" element={withSuspense(NotFound)} />
       </Route>
     </RouterRoutes>

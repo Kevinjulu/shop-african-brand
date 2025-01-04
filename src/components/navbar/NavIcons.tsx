@@ -49,56 +49,53 @@ export const NavIcons = () => {
         )}
       </Link>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className="p-2 hover:bg-primary-dark rounded-full"
+      {user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="p-2 hover:bg-primary-dark rounded-full"
+            >
+              <User className="h-6 w-6 text-white" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="w-56 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-lg mt-2"
           >
-            <User className="h-6 w-6 text-white" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent 
-          align="end" 
-          className="w-56 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-lg mt-2"
-        >
-          {user ? (
-            <>
-              <DropdownMenuItem asChild>
-                <Link 
-                  to="/account" 
-                  className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
-                >
-                  My Account
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link 
-                  to="/order-history" 
-                  className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
-                >
-                  Order History
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={handleSignOut}
-                className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md cursor-pointer"
-              >
-                Sign Out
-              </DropdownMenuItem>
-            </>
-          ) : (
             <DropdownMenuItem asChild>
               <Link 
-                to="/auth" 
-                className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
+                to="/account" 
+                className="flex items-center px-3 py-2 text-sm text-gray-900 hover:bg-primary/10 hover:text-primary rounded-md"
               >
-                Sign In
+                My Account
               </Link>
             </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <DropdownMenuItem asChild>
+              <Link 
+                to="/orders" 
+                className="flex items-center px-3 py-2 text-sm text-gray-900 hover:bg-primary/10 hover:text-primary rounded-md"
+              >
+                Order History
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleSignOut}
+              className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md cursor-pointer"
+            >
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button
+          variant="ghost"
+          className="text-gray-900 hover:bg-primary/10"
+          onClick={() => navigate("/auth")}
+        >
+          Sign In
+        </Button>
+      )}
     </div>
   );
 };
