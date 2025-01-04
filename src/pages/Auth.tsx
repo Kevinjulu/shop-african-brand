@@ -6,15 +6,17 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
-const AuthPage = () => {
+const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const from = (location.state as any)?.from || '/';
 
   useEffect(() => {
+    console.log("Auth page: Current location state:", location.state);
+    console.log("Auth page: Redirecting to:", from);
+    
     if (user) {
-      console.log("User is authenticated, redirecting to:", from);
       navigate(from);
     }
   }, [user, navigate, from]);
