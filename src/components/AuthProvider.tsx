@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useAuthState } from "@/hooks/useAuthState";
 import type { AuthContextType, Profile } from "@/types/auth";
 import { LoadingSpinner } from "./LoadingSpinner";
 
@@ -26,22 +25,48 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading: authLoading, error: authError } = useAuthState();
   const navigate = useNavigate();
   const location = useLocation();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-    setLoading(false);
-  }, [user]);
+    console.log("AuthProvider: Initializing");
 
-  useEffect(() => {
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Error getting session:", sessionError);
+          setError(sessionError);
+          return;
+        }
+
+        setUser(session?.user || null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
+      
+      setUser(session?.user || null);
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      }
+      setLoading(false);
       
       if (event === 'SIGNED_OUT') {
         navigate('/auth');
@@ -56,12 +81,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [navigate, location]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', userId)
         .single();
 
       if (error) throw error;
@@ -109,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', user?.id);
 
       if (error) throw error;
-      await fetchProfile();
+      await fetchProfile(user.id);
       toast.success('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -118,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  if (loading || authLoading) {
+  if (loading) {
     console.log("AuthProvider: Loading state");
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -127,16 +152,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }
 
-  if (authError) {
-    console.error("AuthProvider: Error state", authError);
-    toast.error(`Authentication error: ${authError.message}`);
-  }
-
   return (
     <AuthContext.Provider value={{ 
       user, 
-      loading: authLoading, 
-      error: authError, 
+      loading, 
+      error, 
       signOut: handleSignOut,
       resetPassword,
       updateProfile,
