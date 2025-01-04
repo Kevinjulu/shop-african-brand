@@ -25,16 +25,18 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading, error } = useAuthState();
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading: authLoading, error: authError } = useAuthState();
   const navigate = useNavigate();
   const location = useLocation();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
     }
+    setLoading(false);
   }, [user]);
 
   useEffect(() => {
@@ -116,8 +118,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  if (loading && !user) {
-    console.log("AuthProvider: Initial loading state");
+  if (loading || authLoading) {
+    console.log("AuthProvider: Loading state");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -125,16 +127,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (error) {
-    console.error("AuthProvider: Error state", error);
-    toast.error(`Authentication error: ${error.message}`);
+  if (authError) {
+    console.error("AuthProvider: Error state", authError);
+    toast.error(`Authentication error: ${authError.message}`);
   }
 
   return (
     <AuthContext.Provider value={{ 
       user, 
-      loading, 
-      error, 
+      loading: authLoading, 
+      error: authError, 
       signOut: handleSignOut,
       resetPassword,
       updateProfile,
