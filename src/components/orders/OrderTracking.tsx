@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Package, Truck, CheckCircle, MapPin } from "lucide-react";
+import { Package, Truck, CheckCircle, MapPin, Clock } from "lucide-react";
 import type { TrackingUpdate } from "@/types/order";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface OrderTrackingProps {
   orderId: string;
@@ -19,17 +20,21 @@ export const OrderTracking = ({ orderId }: OrderTrackingProps) => {
         .eq("order_id", orderId)
         .order("created_at", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tracking updates:', error);
+        throw error;
+      }
       return data as TrackingUpdate[];
     },
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    cacheTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (isLoading) {
     return (
       <Card className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-20 bg-gray-200 rounded"></div>
+        <div className="flex justify-center">
+          <LoadingSpinner />
         </div>
       </Card>
     );
@@ -38,7 +43,10 @@ export const OrderTracking = ({ orderId }: OrderTrackingProps) => {
   if (!trackingUpdates?.length) {
     return (
       <Card className="p-6">
-        <p className="text-gray-500">No tracking information available yet.</p>
+        <div className="flex items-center gap-2 text-gray-500">
+          <Clock className="w-5 h-5" />
+          <p>No tracking information available yet.</p>
+        </div>
       </Card>
     );
   }
