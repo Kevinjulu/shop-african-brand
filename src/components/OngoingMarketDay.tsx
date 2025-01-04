@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MarketHeader } from "./ongoing-market/MarketHeader";
 import { ProductSlider } from "./ongoing-market/ProductSlider";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useCarouselAutoplay } from "@/hooks/use-carousel-autoplay";
 
 interface Marketplace {
   id: string;
@@ -32,6 +33,12 @@ export const OngoingMarketDay = () => {
     hours: 0,
     minutes: 0,
     seconds: 0
+  });
+
+  // Setup autoplay for mobile carousel
+  const { onApiChange, handleMouseEnter, handleMouseLeave } = useCarouselAutoplay({
+    delay: 3000,
+    stopOnInteraction: true
   });
 
   useEffect(() => {
@@ -171,7 +178,15 @@ export const OngoingMarketDay = () => {
           timeLeft={timeLeft}
           marketId={activeMarket.id}
         />
-        <ProductSlider products={marketProducts} />
+        <div 
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <ProductSlider 
+            products={marketProducts} 
+            onCarouselApiChange={onApiChange}
+          />
+        </div>
       </div>
     </section>
   );

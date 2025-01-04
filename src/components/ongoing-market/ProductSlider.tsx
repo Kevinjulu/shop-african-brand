@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/carousel";
 import { ProductCard } from "./ProductCard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { type EmblaCarouselType } from "embla-carousel";
 
 export interface Product {
   id: string;
@@ -18,9 +19,10 @@ export interface Product {
 
 interface ProductSliderProps {
   products: Product[];
+  onCarouselApiChange?: (api: EmblaCarouselType) => void;
 }
 
-export const ProductSlider = ({ products }: ProductSliderProps) => {
+export const ProductSlider = ({ products, onCarouselApiChange }: ProductSliderProps) => {
   const isMobile = useIsMobile();
 
   if (!isMobile) {
@@ -40,6 +42,7 @@ export const ProductSlider = ({ products }: ProductSliderProps) => {
         align: "start",
         loop: true,
       }}
+      onApiChange={onCarouselApiChange}
     >
       <CarouselContent>
         {products.map((product) => (
