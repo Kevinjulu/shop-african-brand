@@ -14,15 +14,21 @@ export const useCurrency = () => {
 
   useEffect(() => {
     const detectUserCurrency = async () => {
-      const service = CurrencyMicroservice.getInstance();
-      const userCountry = await service.getUserCountry();
-      const currencyInfo = CURRENCIES[userCountry];
-      
-      if (currencyInfo) {
-        setCurrency({ 
-          code: currencyInfo.code, 
-          symbol: currencyInfo.symbol 
-        });
+      try {
+        const service = CurrencyMicroservice.getInstance();
+        const userCountry = await service.getUserCountry();
+        const currencyInfo = CURRENCIES[userCountry];
+        
+        if (currencyInfo) {
+          console.log('Setting user currency to:', currencyInfo.code);
+          setCurrency({ 
+            code: currencyInfo.code, 
+            symbol: currencyInfo.symbol 
+          });
+        }
+      } catch (error) {
+        console.error('Error detecting user currency:', error);
+        // Keep default USD if detection fails
       }
     };
 

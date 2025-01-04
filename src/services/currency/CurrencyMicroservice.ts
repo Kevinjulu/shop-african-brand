@@ -45,15 +45,23 @@ export class CurrencyMicroservice {
 
   async getUserCountry(): Promise<string> {
     try {
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch('https://ipapi.co/json/', {
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
       if (!response.ok) {
         throw new Error('Failed to detect country');
       }
+      
       const data = await response.json();
+      console.log('Detected user country:', data.country_code);
       return data.country_code || 'US';
     } catch (error) {
       console.error('Error getting user country:', error);
-      return 'US';
+      return 'US'; // Default to US if detection fails
     }
   }
 }

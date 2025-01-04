@@ -36,10 +36,11 @@ export class CurrencyService {
 
     try {
       console.log('Fetching fresh exchange rates');
-      const currencies = Object.keys(CURRENCIES).map(key => CURRENCIES[key].code).join(',');
+      // Only request supported currencies
+      const supportedCurrencies = ['KES', 'NGN', 'GHS', 'ZAR', 'EGP', 'MAD', 'USD'].join(',');
       
       const response = await fetch(
-        `https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=USD&currencies=${currencies}`
+        `https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=USD&currencies=${supportedCurrencies}`
       );
 
       if (!response.ok) {
@@ -56,7 +57,16 @@ export class CurrencyService {
       return data.data;
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
-      throw error;
+      // Return default rates if API fails
+      return {
+        KES: 153.00,
+        NGN: 907.00,
+        GHS: 12.30,
+        ZAR: 18.65,
+        EGP: 30.90,
+        MAD: 9.95,
+        USD: 1.00
+      };
     }
   }
 
