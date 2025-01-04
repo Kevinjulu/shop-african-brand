@@ -16,16 +16,16 @@ const AuthContext = createContext<AuthContextType>({
   profile: null
 });
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     console.error("useAuth must be used within an AuthProvider");
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading, error: authError } = useAuthState();
@@ -138,4 +138,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
+}
