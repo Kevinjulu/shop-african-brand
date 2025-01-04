@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { CURRENCIES } from "@/utils/currency";
 
 export class CurrencyMicroservice {
   private static instance: CurrencyMicroservice;
@@ -13,13 +14,19 @@ export class CurrencyMicroservice {
 
   async formatPrice(amount: number, countryCode?: string): Promise<string> {
     try {
+      console.log('Formatting price for country:', countryCode);
+      
       // Default to USD if no country code provided
       const currency = countryCode ? await this.getCurrencyForCountry(countryCode) : 'USD';
+      const rate = CURRENCIES[countryCode || 'US']?.rate || 1;
       
+      // Convert amount to the target currency
+      const convertedAmount = amount * rate;
+
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency
-      }).format(amount);
+      }).format(convertedAmount);
     } catch (error) {
       console.error('Error formatting price:', error);
       return `${amount}`;
@@ -38,5 +45,16 @@ export class CurrencyMicroservice {
     };
 
     return currencyMap[countryCode] || 'USD';
+  }
+
+  async getUserCountry(): Promise<string> {
+    try {
+      // In a real implementation, you would use a geolocation service
+      // For now, we'll return a default value
+      return 'KE';
+    } catch (error) {
+      console.error('Error getting user country:', error);
+      return 'US';
+    }
   }
 }

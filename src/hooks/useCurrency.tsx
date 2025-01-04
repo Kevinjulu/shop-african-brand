@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CurrencyMicroservice } from '@/services/currency/CurrencyMicroservice';
+import { CURRENCIES } from '@/utils/currency';
 
 export interface Currency {
   code: string;
@@ -10,6 +11,23 @@ export const useCurrency = () => {
   const [loading, setLoading] = useState(false);
   const [formattedPrices, setFormattedPrices] = useState<Record<string, string>>({});
   const [currency, setCurrency] = useState<Currency>({ code: 'USD', symbol: '$' });
+
+  useEffect(() => {
+    const detectUserCurrency = async () => {
+      const service = CurrencyMicroservice.getInstance();
+      const userCountry = await service.getUserCountry();
+      const currencyInfo = CURRENCIES[userCountry];
+      
+      if (currencyInfo) {
+        setCurrency({ 
+          code: currencyInfo.code, 
+          symbol: currencyInfo.symbol 
+        });
+      }
+    };
+
+    detectUserCurrency();
+  }, []);
 
   const formatPriceSync = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {
