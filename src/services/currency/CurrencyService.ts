@@ -1,58 +1,70 @@
-import { CURRENCIES } from "@/utils/currency";
+import { performanceMonitor } from '@/services/monitoring/PerformanceMonitor';
 
 const API_KEY = 'fca_live_o8Y77Vr1KT22kgx1mtgltreMqAsXxEVQ04ofERZd';
-const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+const CACHE_KEY = 'exchange_rates_cache';
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
-interface CacheEntry {
-  rates: { [key: string]: number };
-  timestamp: number;
-}
+export const CURRENCIES = {
+  KE: { code: 'KES', symbol: 'KSh' },
+  NG: { code: 'NGN', symbol: '₦' },
+  GH: { code: 'GHS', symbol: 'GH₵' },
+  ZA: { code: 'ZAR', symbol: 'R' },
+  EG: { code: 'EGP', symbol: 'E£' },
+  MA: { code: 'MAD', symbol: 'MAD' },
+  US: { code: 'USD', symbol: '$' },
+  // Default fallback
+  DEFAULT: { code: 'USD', symbol: '$' }
+};
 
 export class CurrencyService {
   private static instance: CurrencyService;
-  private cache: CacheEntry | null = null;
+  private rates: Record<string, number> | null = null;
+  private lastFetch: number = 0;
 
   private constructor() {}
 
-  public static getInstance(): CurrencyService {
+  static getInstance(): CurrencyService {
     if (!CurrencyService.instance) {
       CurrencyService.instance = new CurrencyService();
     }
     return CurrencyService.instance;
   }
 
-  private isCacheValid(): boolean {
-    return (
-      this.cache !== null &&
-      Date.now() - this.cache.timestamp < CACHE_DURATION
-    );
-  }
-
-  async fetchExchangeRates(): Promise<{ [key: string]: number }> {
-    if (this.isCacheValid()) {
-      console.log('Using cached exchange rates');
-      return this.cache!.rates;
-    }
-
+  private async fetchExchangeRates(): Promise<Record<string, number>> {
+    const startTime = performance.now();
     try {
       console.log('Fetching fresh exchange rates');
       // Only request supported currencies
       const supportedCurrencies = ['KES', 'NGN', 'GHS', 'ZAR', 'EGP', 'MAD', 'USD'].join(',');
       
       const response = await fetch(
-        `https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=USD&currencies=${supportedCurrencies}`
+        `https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=USD&currencies=${supportedCurrencies}`,
+        {
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch exchange rates');
+        const errorText = await response.text();
+        console.error('Exchange rate API error:', errorText);
+        throw new Error(`Exchange rate API error: ${response.status}`);
       }
 
       const data = await response.json();
       
-      this.cache = {
-        rates: data.data,
-        timestamp: Date.now()
-      };
+      // Record API performance
+      const endTime = performance.now();
+      performanceMonitor.recordMetric('currency_api_response_time', endTime - startTime);
+
+      // Cache the rates
+      this.rates = data.data;
+      this.lastFetch = Date.now();
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        rates: this.rates,
+        timestamp: this.lastFetch
+      }));
 
       return data.data;
     } catch (error) {
@@ -70,23 +82,47 @@ export class CurrencyService {
     }
   }
 
+  private loadCachedRates(): boolean {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { rates, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        this.rates = rates;
+        this.lastFetch = timestamp;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async getExchangeRates(): Promise<Record<string, number>> {
+    if (!this.rates) {
+      const hasCachedRates = this.loadCachedRates();
+      if (!hasCachedRates) {
+        return this.fetchExchangeRates();
+      }
+    } else if (Date.now() - this.lastFetch > CACHE_DURATION) {
+      return this.fetchExchangeRates();
+    }
+    return this.rates;
+  }
+
   async convertAmount(amount: number, fromCurrency: string, toCurrency: string): Promise<number> {
     try {
-      const rates = await this.fetchExchangeRates();
+      const rates = await this.getExchangeRates();
       
-      // If either currency is USD, we can use the rate directly
-      if (fromCurrency === 'USD') {
-        return amount * (rates[toCurrency] || 1);
-      }
-      if (toCurrency === 'USD') {
-        return amount / (rates[fromCurrency] || 1);
+      // If either currency is not supported, return original amount
+      if (!rates[fromCurrency] || !rates[toCurrency]) {
+        console.warn(`Unsupported currency conversion: ${fromCurrency} to ${toCurrency}`);
+        return amount;
       }
 
-      // Convert through USD
-      const amountInUSD = amount / (rates[fromCurrency] || 1);
-      return amountInUSD * (rates[toCurrency] || 1);
+      // Convert to USD first (base currency)
+      const amountInUSD = amount / rates[fromCurrency];
+      // Then convert to target currency
+      return amountInUSD * rates[toCurrency];
     } catch (error) {
-      console.error('Error converting currency:', error);
+      console.error('Currency conversion error:', error);
       return amount; // Return original amount if conversion fails
     }
   }

@@ -1,50 +1,36 @@
-import { CURRENCIES } from "@/utils/currency";
-import { CurrencyService } from "./CurrencyService";
+import { CURRENCIES } from './CurrencyService';
 
 export class CurrencyMicroservice {
   private static instance: CurrencyMicroservice;
+  private cachedCountry: string | null = null;
+
   private constructor() {}
 
-  public static getInstance(): CurrencyMicroservice {
+  static getInstance(): CurrencyMicroservice {
     if (!CurrencyMicroservice.instance) {
       CurrencyMicroservice.instance = new CurrencyMicroservice();
     }
     return CurrencyMicroservice.instance;
   }
 
-  async formatPrice(amount: number, countryCode?: string): Promise<string> {
-    try {
-      console.log('Formatting price for country:', countryCode);
-      
-      // Default to USD if no country code provided
-      const currency = countryCode ? await this.getCurrencyForCountry(countryCode) : 'USD';
-      
-      // Get currency service instance
-      const currencyService = CurrencyService.getInstance();
-      
-      // Convert amount to the target currency
-      const convertedAmount = await currencyService.convertAmount(
-        amount,
-        'USD',
-        currency
-      );
-
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency
-      }).format(convertedAmount);
-    } catch (error) {
-      console.error('Error formatting price:', error);
-      return `${amount}`;
-    }
-  }
-
-  private async getCurrencyForCountry(countryCode: string): Promise<string> {
-    return CURRENCIES[countryCode]?.code || 'USD';
-  }
-
   async getUserCountry(): Promise<string> {
+    if (this.cachedCountry) {
+      return this.cachedCountry;
+    }
+
     try {
+      // Try to get country from browser's navigator.language first
+      const browserLocale = navigator.language;
+      if (browserLocale) {
+        const country = browserLocale.split('-')[1];
+        if (country && CURRENCIES[country]) {
+          console.log('Using browser locale for country detection:', country);
+          this.cachedCountry = country;
+          return country;
+        }
+      }
+
+      // Fallback to IP-based detection
       const response = await fetch('https://ipapi.co/json/', {
         mode: 'cors',
         headers: {
@@ -57,11 +43,42 @@ export class CurrencyMicroservice {
       }
       
       const data = await response.json();
-      console.log('Detected user country:', data.country_code);
-      return data.country_code || 'US';
+      const countryCode = data.country_code;
+      
+      if (countryCode && CURRENCIES[countryCode]) {
+        console.log('Detected user country:', countryCode);
+        this.cachedCountry = countryCode;
+        return countryCode;
+      }
+
+      console.log('Falling back to default country: US');
+      return 'US';
     } catch (error) {
       console.error('Error getting user country:', error);
       return 'US'; // Default to US if detection fails
     }
+  }
+
+  async formatPrice(amount: number, countryCode?: string): Promise<string> {
+    const userCountry = countryCode || await this.getUserCountry();
+    const currency = CURRENCIES[userCountry] || CURRENCIES.DEFAULT;
+    
+    return new Intl.NumberFormat(navigator.language, {
+      style: 'currency',
+      currency: currency.code,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  }
+
+  formatPriceSync(amount: number, countryCode?: string): string {
+    const currency = countryCode ? CURRENCIES[countryCode] : CURRENCIES.DEFAULT;
+    
+    return new Intl.NumberFormat(navigator.language, {
+      style: 'currency',
+      currency: currency.code,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
   }
 }
