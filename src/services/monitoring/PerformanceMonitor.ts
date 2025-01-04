@@ -45,11 +45,18 @@ export class PerformanceMonitor {
       const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
       const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : '';
 
+      console.log('Reporting performance metric:', {
+        metric_name: metricName,
+        value,
+        page_url: pageUrl,
+        user_agent: userAgent
+      });
+
       const { error } = await supabase
         .from('performance_metrics')
         .insert({
-          value: value,
           metric_name: metricName,
+          value: value,
           page_url: pageUrl,
           user_agent: userAgent,
           timestamp: new Date().toISOString()
@@ -57,6 +64,7 @@ export class PerformanceMonitor {
 
       if (error) {
         console.error('Failed to insert performance metric:', error);
+        throw error;
       }
     } catch (error) {
       console.error('Failed to report performance issue:', error);
