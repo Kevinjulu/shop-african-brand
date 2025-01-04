@@ -148,6 +148,18 @@ const ProductManager = () => {
         onDelete={handleDelete}
       />
 
+      {selectedProduct && (
+        <SEOTools
+          productId={selectedProduct.id}
+          initialData={{
+            seo_title: selectedProduct.seo_title,
+            seo_description: selectedProduct.seo_description,
+            seo_keywords: selectedProduct.seo_keywords,
+            canonical_url: selectedProduct.canonical_url,
+          }}
+        />
+      )}
+
       <ProductFormDialog
         open={showForm}
         onOpenChange={setShowForm}

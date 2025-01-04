@@ -84,6 +84,13 @@ export type Database = {
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "analytics_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       announcements: {
@@ -366,6 +373,13 @@ export type Database = {
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "discounts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       email_templates: {
@@ -519,6 +533,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_preferences_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -869,6 +890,78 @@ export type Database = {
           },
         ]
       }
+      order_workflow_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_state: string
+          notes: string | null
+          order_id: string | null
+          previous_state: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_state: string
+          notes?: string | null
+          order_id?: string | null
+          previous_state?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_state?: string
+          notes?: string | null
+          order_id?: string | null
+          previous_state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_workflow_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_workflow_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_workflow_states: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          next_possible_states: Json | null
+          required_actions: Json | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          next_possible_states?: Json | null
+          required_actions?: Json | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          next_possible_states?: Json | null
+          required_actions?: Json | null
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -1204,6 +1297,7 @@ export type Database = {
       }
       products: {
         Row: {
+          canonical_url: string | null
           category: string | null
           category_id: string | null
           created_at: string
@@ -1221,12 +1315,17 @@ export type Database = {
           origin_country: string | null
           price: number
           search_vector: unknown | null
+          seo_description: string | null
+          seo_keywords: string[] | null
+          seo_title: string | null
           status: string
           stock: number
+          structured_data: Json | null
           updated_at: string
           vendor_id: string | null
         }
         Insert: {
+          canonical_url?: string | null
           category?: string | null
           category_id?: string | null
           created_at?: string
@@ -1244,12 +1343,17 @@ export type Database = {
           origin_country?: string | null
           price: number
           search_vector?: unknown | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           status?: string
           stock?: number
+          structured_data?: Json | null
           updated_at?: string
           vendor_id?: string | null
         }
         Update: {
+          canonical_url?: string | null
           category?: string | null
           category_id?: string | null
           created_at?: string
@@ -1267,8 +1371,12 @@ export type Database = {
           origin_country?: string | null
           price?: number
           search_vector?: unknown | null
+          seo_description?: string | null
+          seo_keywords?: string[] | null
+          seo_title?: string | null
           status?: string
           stock?: number
+          structured_data?: Json | null
           updated_at?: string
           vendor_id?: string | null
         }
@@ -1293,6 +1401,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1436,6 +1551,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_requests_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1681,6 +1803,13 @@ export type Database = {
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "trade_documents_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       vendor_payouts: {
@@ -1731,6 +1860,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_payouts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1882,6 +2018,13 @@ export type Database = {
             referencedRelation: "vendor_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "vendor_ratings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_sales_performance"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       wishlists: {
@@ -1922,6 +2065,16 @@ export type Database = {
       }
     }
     Views: {
+      sales_by_period: {
+        Row: {
+          average_order_value: number | null
+          period: string | null
+          total_orders: number | null
+          total_revenue: number | null
+          unique_customers: number | null
+        }
+        Relationships: []
+      }
       vendor_analytics_summary: {
         Row: {
           average_rating: number | null
@@ -1929,6 +2082,17 @@ export type Database = {
           total_orders: number | null
           total_products: number | null
           total_sales: number | null
+          vendor_id: string | null
+        }
+        Relationships: []
+      }
+      vendor_sales_performance: {
+        Row: {
+          average_order_value: number | null
+          business_name: string | null
+          gross_sales: number | null
+          total_orders: number | null
+          unique_customers: number | null
           vendor_id: string | null
         }
         Relationships: []
