@@ -25,5 +25,7 @@ supabase.auth.getSession().then(({ data: { session } }) => {
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <App />
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );
