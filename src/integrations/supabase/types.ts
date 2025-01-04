@@ -1055,6 +1055,36 @@ export type Database = {
           },
         ]
       }
+      performance_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metric_name: string
+          page_url: string | null
+          timestamp: string
+          user_agent: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_name: string
+          page_url?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_name?: string
+          page_url?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           created_at: string
