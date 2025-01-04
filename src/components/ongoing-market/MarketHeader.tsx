@@ -18,17 +18,11 @@ interface MarketHeaderProps {
 export const MarketHeader = ({ name, location, country, timeLeft, marketId }: MarketHeaderProps) => {
   return (
     <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2 md:mb-4">
-      <div className="flex-grow">
+      <div className="flex-grow flex flex-col md:flex-row md:items-center gap-2">
         <h2 className="text-lg md:text-2xl font-bold text-secondary">
           Ongoing Market Day ({name})
         </h2>
-        <div className="flex items-center text-gray-600 text-sm mt-1">
-          <MapPin className="w-4 h-4 mr-1" />
-          {location}, {country}
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-4">
+        
         <div className="flex items-center bg-[#f97316] text-white rounded-lg px-3 py-1.5 md:py-2 shadow-md hover:bg-[#ea580c] transition-colors">
           <Timer className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2 animate-pulse" />
           <div className="flex items-center gap-1.5 text-xs md:text-sm font-medium">
@@ -47,6 +41,13 @@ export const MarketHeader = ({ name, location, country, timeLeft, marketId }: Ma
               <span className="text-[9px] md:text-[10px] opacity-80 uppercase tracking-wider">sec</span>
             </div>
           </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <div className="flex items-center text-gray-600 text-sm">
+          <MapPin className="w-4 h-4 mr-1" />
+          {location}, {country}
         </div>
         
         <Link to={`/products?market_id=${marketId}`} className="hidden md:block">

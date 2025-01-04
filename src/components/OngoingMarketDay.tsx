@@ -69,7 +69,7 @@ export const OngoingMarketDay = () => {
         console.log('Active market found:', marketData);
         setActiveMarket(marketData);
 
-        // Fetch products
+        // Fetch products - limit changed to 8 from 10
         const { data: productsData, error: productsError } = await supabase
           .from('products')
           .select(`
@@ -83,7 +83,7 @@ export const OngoingMarketDay = () => {
             )
           `)
           .eq('status', 'published')
-          .limit(10);
+          .limit(8);
 
         if (productsError) {
           console.error('Error fetching products:', productsError);
