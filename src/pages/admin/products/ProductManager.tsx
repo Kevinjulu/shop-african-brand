@@ -2,13 +2,11 @@ import { useState } from "react";
 import { ProductTable } from "@/components/admin/products/ProductTable";
 import { ProductActions } from "@/components/admin/products/ProductActions";
 import { ProductFormDialog } from "@/components/admin/products/ProductFormDialog";
-import { InventoryManager } from "@/components/admin/products/InventoryManager";
+import { BulkOperations } from "@/components/admin/products/BulkOperations";
 import { Product } from "@/types/product";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 const ProductManager = () => {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -43,7 +41,7 @@ const ProductManager = () => {
         throw error;
       }
 
-      return data as unknown as Product[];
+      return data as Product[];
     },
   });
 
@@ -51,11 +49,28 @@ const ProductManager = () => {
     setShowForm(false);
     setSelectedProduct(null);
     refetch();
-    toast.success(selectedProduct ? 'Product updated successfully' : 'Product created successfully');
   };
 
   const handleDelete = async (productId: string) => {
     try {
+      // First delete associated images from storage
+      const { data: images } = await supabase
+        .from('product_images')
+        .select('image_url')
+        .eq('product_id', productId);
+
+      if (images) {
+        for (const image of images) {
+          const fileName = image.image_url.split('/').pop();
+          if (fileName) {
+            await supabase.storage
+              .from('product-images')
+              .remove([fileName]);
+          }
+        }
+      }
+
+      // Delete product and related records
       const { error } = await supabase
         .from('products')
         .delete()
@@ -73,6 +88,25 @@ const ProductManager = () => {
 
   const handleBulkDelete = async () => {
     try {
+      // Delete associated images first
+      for (const productId of selectedProducts) {
+        const { data: images } = await supabase
+          .from('product_images')
+          .select('image_url')
+          .eq('product_id', productId);
+
+        if (images) {
+          for (const image of images) {
+            const fileName = image.image_url.split('/').pop();
+            if (fileName) {
+              await supabase.storage
+                .from('product-images')
+                .remove([fileName]);
+            }
+          }
+        }
+      }
+
       const { error } = await supabase
         .from('products')
         .delete()
@@ -103,32 +137,19 @@ const ProductManager = () => {
         />
       </div>
 
-      <Tabs defaultValue="products" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
-        </TabsList>
+      <BulkOperations vendorId={products?.[0]?.vendor_id || ''} />
 
-        <TabsContent value="products">
-          <ProductTable
-            products={products || []}
-            isLoading={isLoading}
-            selectedProducts={selectedProducts}
-            setSelectedProducts={setSelectedProducts}
-            onEdit={(product) => {
-              setSelectedProduct(product);
-              setShowForm(true);
-            }}
-            onDelete={handleDelete}
-          />
-        </TabsContent>
-
-        <TabsContent value="inventory">
-          <Card className="p-6">
-            <InventoryManager />
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <ProductTable
+        products={products || []}
+        isLoading={isLoading}
+        selectedProducts={selectedProducts}
+        setSelectedProducts={setSelectedProducts}
+        onEdit={(product) => {
+          setSelectedProduct(product);
+          setShowForm(true);
+        }}
+        onDelete={handleDelete}
+      />
 
       <ProductFormDialog
         open={showForm}
