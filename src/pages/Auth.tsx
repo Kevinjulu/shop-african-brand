@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
-const AuthPage: React.FC = () => {
+const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -49,7 +49,6 @@ const AuthPage: React.FC = () => {
             }}
             theme="light"
             providers={[]}
-            redirectTo={`${window.location.origin}/account`}
           />
         </div>
       </div>
