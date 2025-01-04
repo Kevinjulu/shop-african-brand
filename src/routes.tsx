@@ -31,7 +31,7 @@ export const Routes = () => {
   return (
     <RouterRoutes>
       {/* Admin routes */}
-      {adminRoutes.map((route) => route)}
+      {adminRoutes}
       
       {/* Public routes */}
       <Route element={<Layout />}>
