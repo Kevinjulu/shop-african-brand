@@ -42,7 +42,7 @@ export const ProductSlider = ({ products, onCarouselApiChange }: ProductSliderPr
         align: "start",
         loop: true,
       }}
-      onApiChange={onCarouselApiChange}
+      setApi={onCarouselApiChange}
     >
       <CarouselContent>
         {products.map((product) => (
