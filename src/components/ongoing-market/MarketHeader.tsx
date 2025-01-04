@@ -29,22 +29,22 @@ export const MarketHeader = ({ name, location, country, timeLeft, marketId }: Ma
       </div>
       
       <div className="flex items-center gap-4">
-        <div className="flex items-center bg-[#f97316] text-white rounded-lg px-3 py-2 md:py-2.5 whitespace-nowrap">
-          <Timer className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-          <div className="flex items-center gap-1 text-sm md:text-base font-medium">
-            <div className="flex flex-col items-center">
-              <span className="tabular-nums">{String(timeLeft.hours).padStart(2, '0')}</span>
-              <span className="text-[10px] opacity-80">HRS</span>
+        <div className="flex items-center bg-[#f97316] text-white rounded-lg px-3 py-1.5 md:py-2 shadow-md hover:bg-[#ea580c] transition-colors">
+          <Timer className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2 animate-pulse" />
+          <div className="flex items-center gap-1.5 text-xs md:text-sm font-medium">
+            <div className="flex flex-col items-center leading-tight">
+              <span className="tabular-nums font-semibold">{String(timeLeft.hours).padStart(2, '0')}</span>
+              <span className="text-[9px] md:text-[10px] opacity-80 uppercase tracking-wider">hrs</span>
             </div>
-            <span className="mx-0.5">:</span>
-            <div className="flex flex-col items-center">
-              <span className="tabular-nums">{String(timeLeft.minutes).padStart(2, '0')}</span>
-              <span className="text-[10px] opacity-80">MIN</span>
+            <span className="mx-0.5 -mt-3">:</span>
+            <div className="flex flex-col items-center leading-tight">
+              <span className="tabular-nums font-semibold">{String(timeLeft.minutes).padStart(2, '0')}</span>
+              <span className="text-[9px] md:text-[10px] opacity-80 uppercase tracking-wider">min</span>
             </div>
-            <span className="mx-0.5">:</span>
-            <div className="flex flex-col items-center">
-              <span className="tabular-nums">{String(timeLeft.seconds).padStart(2, '0')}</span>
-              <span className="text-[10px] opacity-80">SEC</span>
+            <span className="mx-0.5 -mt-3">:</span>
+            <div className="flex flex-col items-center leading-tight">
+              <span className="tabular-nums font-semibold">{String(timeLeft.seconds).padStart(2, '0')}</span>
+              <span className="text-[9px] md:text-[10px] opacity-80 uppercase tracking-wider">sec</span>
             </div>
           </div>
         </div>
