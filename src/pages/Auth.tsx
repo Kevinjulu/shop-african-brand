@@ -1,104 +1,26 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { useAuth } from "@/components/AuthProvider";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const from = (location.state as any)?.from || '/';
 
   console.log("Auth page: Current location state:", location.state);
   console.log("Auth page: Redirecting to:", from);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          console.log("User already authenticated, checking admin status");
-          const { data: adminData } = await supabase
-            .from('admin_profiles')
-            .select('is_admin')
-            .eq('id', session.user.id)
-            .single();
-
-          if (adminData?.is_admin) {
-            console.log("Admin user detected, redirecting to admin dashboard");
-            navigate("/admin");
-          } else {
-            console.log("Regular user, redirecting to:", from);
-            navigate(from);
-          }
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkSession();
-  }, [navigate, from]);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
-      
-      if (event === 'SIGNED_IN' && session) {
-        try {
-          // Create profile if it doesn't exist
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({ 
-              id: session.user.id,
-              email: session.user.email,
-              updated_at: new Date().toISOString()
-            });
-
-          if (profileError) {
-            console.error("Error updating profile:", profileError);
-          }
-
-          // Check if user is admin
-          const { data: adminData } = await supabase
-            .from('admin_profiles')
-            .select('is_admin')
-            .eq('id', session.user.id)
-            .single();
-
-          if (adminData?.is_admin) {
-            console.log("Admin user detected, redirecting to admin dashboard");
-            navigate("/admin");
-          } else {
-            console.log("Regular user, redirecting to:", from);
-            navigate(from);
-          }
-          
-          toast.success("Signed in successfully!");
-        } catch (error) {
-          console.error("Error in auth flow:", error);
-          toast.error("An error occurred during sign in");
-        }
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, from]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
+    if (user) {
+      navigate(from);
+    }
+  }, [user, navigate, from]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-12 sm:px-6 lg:px-8">
@@ -123,8 +45,8 @@ const AuthPage = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: '#FDB813',
-                    brandAccent: '#FDB813',
+                    brand: '#FFA500',
+                    brandAccent: '#FB923C',
                   },
                 },
               },
