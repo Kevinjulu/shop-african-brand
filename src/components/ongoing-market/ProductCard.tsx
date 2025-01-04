@@ -41,10 +41,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               <FormattedPrice 
                 amount={product.discountedPrice} 
                 className="text-lg font-bold text-primary"
+                countryCode={product.origin_country || "KE"}
               />
               <FormattedPrice 
                 amount={product.originalPrice}
                 className="text-sm text-gray-400 font-normal line-through"
+                countryCode={product.origin_country || "KE"}
               />
             </div>
             

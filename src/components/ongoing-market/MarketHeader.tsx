@@ -17,7 +17,7 @@ interface MarketHeaderProps {
 
 export const MarketHeader = ({ name, location, country, timeLeft, marketId }: MarketHeaderProps) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-4 md:mb-6">
+    <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2 md:mb-4">
       <div className="flex-grow">
         <h2 className="text-lg md:text-2xl font-bold text-secondary">
           Ongoing Market Day ({name})
