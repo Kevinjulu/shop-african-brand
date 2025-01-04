@@ -27,7 +27,7 @@ export const OrderTracking = ({ orderId }: OrderTrackingProps) => {
       return data as TrackingUpdate[];
     },
     staleTime: 30000, // Consider data fresh for 30 seconds
-    cacheTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (isLoading) {
