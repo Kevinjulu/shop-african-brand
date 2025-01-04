@@ -15,6 +15,7 @@ export interface Product {
   image: string;
   discount: string;
   moq: number;
+  origin_country?: string;
 }
 
 interface ProductSliderProps {
