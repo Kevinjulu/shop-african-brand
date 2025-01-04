@@ -29,6 +29,8 @@ export const NavIcons = () => {
     }
   };
 
+  console.log("NavIcons rendering, user:", user);
+
   return (
     <div className="flex items-center space-x-2">
       <Link to="/wishlist" className="p-2 text-white hover:text-white/80 relative">
@@ -88,13 +90,29 @@ export const NavIcons = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button
-          variant="ghost"
-          className="text-gray-900 hover:bg-primary/10"
-          onClick={() => navigate("/auth")}
-        >
-          Sign In
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="p-2 hover:bg-primary-dark rounded-full"
+            >
+              <User className="h-6 w-6 text-white" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="w-56 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-lg mt-2"
+          >
+            <DropdownMenuItem asChild>
+              <Link 
+                to="/auth" 
+                className="flex items-center px-3 py-2 text-sm text-gray-900 hover:bg-primary/10 hover:text-primary rounded-md"
+              >
+                Sign In
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
