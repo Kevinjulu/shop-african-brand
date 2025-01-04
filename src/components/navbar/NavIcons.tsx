@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Heart, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlistCount } from "@/hooks/useWishlistCount";
@@ -10,11 +10,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export const NavIcons = () => {
   const { itemsCount } = useCart();
   const { wishlistCount } = useWishlistCount();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Signed out successfully");
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
+  };
 
   return (
     <div className="flex items-center space-x-2">
@@ -45,22 +58,43 @@ export const NavIcons = () => {
             <User className="h-6 w-6 text-white" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent 
+          align="end" 
+          className="w-56 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-lg mt-2"
+        >
           {user ? (
             <>
               <DropdownMenuItem asChild>
-                <Link to="/account" className="w-full">My Account</Link>
+                <Link 
+                  to="/account" 
+                  className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
+                >
+                  My Account
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/order-history" className="w-full">Order History</Link>
+                <Link 
+                  to="/order-history" 
+                  className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
+                >
+                  Order History
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => signOut()}>
+              <DropdownMenuItem 
+                onClick={handleSignOut}
+                className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md cursor-pointer"
+              >
                 Sign Out
               </DropdownMenuItem>
             </>
           ) : (
             <DropdownMenuItem asChild>
-              <Link to="/auth" className="w-full">Sign In</Link>
+              <Link 
+                to="/auth" 
+                className="flex items-center px-3 py-2 text-sm hover:bg-primary/10 hover:text-primary rounded-md"
+              >
+                Sign In
+              </Link>
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

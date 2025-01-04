@@ -24,14 +24,14 @@ export const CategoryDropdown = () => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="h-10 px-4 gap-2 text-white hover:bg-white/10 hover:text-white font-medium"
+          className="h-10 px-4 gap-2 text-white hover:bg-white/10 hover:text-white focus:bg-white/10 active:bg-white/20 font-medium"
         >
           <span>Browse Categories</span>
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        className="w-64 bg-white border border-gray-200 shadow-lg" 
+        className="w-64 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg" 
         align="start"
         sideOffset={0}
       >

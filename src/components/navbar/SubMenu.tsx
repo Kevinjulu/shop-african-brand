@@ -12,20 +12,18 @@ export const SubMenu = () => {
     { label: "All Stores", path: "/stores" },
   ];
 
-  console.log("SubMenu rendering");
-
   return (
     <div className="border-t border-white/10 bg-[#FFA500]/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center h-12">
           <CategoryDropdown />
           <nav className="ml-8 flex-1">
-            <ul className="flex items-center space-x-8">
+            <ul className="flex items-center space-x-6">
               {menuItems.map((item) => (
                 <li key={item.path}>
                   <Link 
                     to={item.path} 
-                    className="text-sm text-white hover:text-white/80 transition-colors font-medium tracking-wide px-2 py-1 rounded-md hover:bg-white/10"
+                    className="text-sm text-white hover:text-white/90 transition-colors font-medium tracking-wide px-3 py-1.5 rounded-md hover:bg-white/10 active:bg-white/20"
                   >
                     {item.label}
                   </Link>
