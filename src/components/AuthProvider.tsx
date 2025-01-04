@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading, error } = useAuthState();
+  const { user, loading: authLoading, error: authError } = useAuthState();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     console.log("AuthProvider: Loading state");
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -113,8 +113,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ 
       user, 
-      loading, 
-      error, 
+      loading: authLoading, 
+      error: authError, 
       signOut: handleSignOut,
       resetPassword,
       updateProfile,
