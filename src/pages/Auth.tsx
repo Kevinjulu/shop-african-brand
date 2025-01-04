@@ -3,8 +3,6 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/components/AuthProvider";
 
 const AuthPage = () => {
@@ -18,6 +16,7 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (user) {
+      console.log("User is authenticated, redirecting to:", from);
       navigate(from);
     }
   }, [user, navigate, from]);

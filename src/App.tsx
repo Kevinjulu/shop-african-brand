@@ -5,19 +5,22 @@ import { Toaster } from "@/components/ui/sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { AuthProvider } from "@/components/AuthProvider";
+import { StrictMode } from "react";
 
 function App() {
   return (
-    <BrowserRouter>
+    <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CartProvider>
-            <Routes />
-            <Toaster />
-          </CartProvider>
-        </AuthProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <CartProvider>
+              <Routes />
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </QueryClientProvider>
-    </BrowserRouter>
+    </StrictMode>
   );
 }
 
