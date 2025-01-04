@@ -1,3 +1,4 @@
+import React from 'react';
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useNavigate, useLocation } from "react-router-dom";

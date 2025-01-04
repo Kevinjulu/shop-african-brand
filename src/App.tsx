@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Routes } from "./routes";
 import { CartProvider } from "@/contexts/CartContext";
@@ -10,20 +11,18 @@ import { supabase } from "@/integrations/supabase/client";
 
 function App() {
   return (
-    <React.StrictMode>
-      <SessionContextProvider supabaseClient={supabase}>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <AuthProvider>
-              <CartProvider>
-                <Routes />
-                <Toaster />
-              </CartProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </SessionContextProvider>
-    </React.StrictMode>
+    <SessionContextProvider supabaseClient={supabase}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <CartProvider>
+              <Routes />
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </SessionContextProvider>
   );
 }
 
