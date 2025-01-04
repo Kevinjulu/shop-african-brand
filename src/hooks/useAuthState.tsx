@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useAuthState = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -30,8 +30,10 @@ export const useAuthState = () => {
       }
     };
 
+    // Get initial session
     getInitialSession();
 
+    // Set up auth state change subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.email);
@@ -41,6 +43,7 @@ export const useAuthState = () => {
       }
     );
 
+    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
