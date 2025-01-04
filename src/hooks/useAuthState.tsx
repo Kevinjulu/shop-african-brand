@@ -8,9 +8,8 @@ export const useAuthState = () => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    console.log("useAuthState: Initializing");
-
     let mounted = true;
+    console.log("useAuthState: Initializing");
 
     const getInitialSession = async () => {
       try {
@@ -38,10 +37,8 @@ export const useAuthState = () => {
       }
     };
 
-    // Get initial session
     getInitialSession();
 
-    // Set up auth state change subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.email);
@@ -53,7 +50,6 @@ export const useAuthState = () => {
       }
     );
 
-    // Cleanup subscription and mounted flag on unmount
     return () => {
       mounted = false;
       subscription.unsubscribe();

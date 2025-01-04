@@ -32,26 +32,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    if (user) {
-      fetchProfile(user.id);
-    }
+    let mounted = true;
+
+    const fetchProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+        if (mounted) {
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to fetch profile');
+      }
+    };
+
+    fetchProfile();
+
+    return () => {
+      mounted = false;
+    };
   }, [user]);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to fetch profile');
-    }
-  };
 
   const handleSignOut = async () => {
     try {
@@ -90,8 +98,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', user?.id);
 
       if (error) throw error;
+      
       if (user) {
-        await fetchProfile(user.id);
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        setProfile(data);
       }
       toast.success('Profile updated successfully');
     } catch (error) {

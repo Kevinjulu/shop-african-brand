@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
@@ -18,7 +18,7 @@ export const MobileNav = () => {
 
   console.log("MobileNav rendering");
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
@@ -26,9 +26,9 @@ export const MobileNav = () => {
     } else {
       toast.error("Please enter a search term");
     }
-  };
+  }, [searchQuery, navigate]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       await signOut();
       navigate('/');
@@ -37,7 +37,7 @@ export const MobileNav = () => {
       console.error('Error signing out:', error);
       toast.error('Failed to sign out');
     }
-  };
+  }, [signOut, navigate]);
 
   return (
     <>

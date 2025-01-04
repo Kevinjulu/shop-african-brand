@@ -13,18 +13,20 @@ function App() {
   console.log("App: Initializing with providers");
   
   return (
-    <SessionContextProvider supabaseClient={supabase}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <CartProvider>
-              <Routes />
-              <Toaster />
-            </CartProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </SessionContextProvider>
+    <React.StrictMode>
+      <SessionContextProvider supabaseClient={supabase}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <CartProvider>
+                <Routes />
+                <Toaster />
+              </CartProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </SessionContextProvider>
+    </React.StrictMode>
   );
 }
 
