@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 import { LoadingFallback } from "@/utils/withSuspense";
 import { adminRoutes } from "@/routes/admin";
 
-// Lazy load pages with proper error boundaries and absolute imports
+// Lazy load pages
 const Home = lazy(() => import("@/pages/Home"));
 const Products = lazy(() => import("@/pages/Products"));
 const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
@@ -31,7 +31,7 @@ export const Routes = () => {
   return (
     <RouterRoutes>
       {/* Admin routes */}
-      {adminRoutes}
+      {adminRoutes.map((route) => route)}
       
       {/* Public routes */}
       <Route element={<Layout />}>
