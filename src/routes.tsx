@@ -2,6 +2,7 @@ import { Route, Routes as RouterRoutes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { Layout } from "@/components/Layout";
 import { LoadingFallback } from "@/utils/withSuspense";
+import { adminRoutes } from "@/routes/admin";
 
 // Lazy load pages with proper error boundaries and absolute imports
 const Home = lazy(() => import("@/pages/Home").catch(() => {
@@ -73,6 +74,10 @@ export const Routes = () => {
   
   return (
     <RouterRoutes>
+      {/* Admin routes */}
+      {adminRoutes}
+      
+      {/* Public routes */}
       <Route element={<Layout />}>
         <Route index element={withSuspense(Home)} />
         <Route path="products" element={withSuspense(Products)} />
