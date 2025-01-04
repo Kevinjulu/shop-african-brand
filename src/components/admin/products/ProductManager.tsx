@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ProductTable } from "./ProductTable";
 import { ProductActions } from "./ProductActions";
 import { ProductFormDialog } from "./ProductFormDialog";
+import { SEOTools } from "./SEOTools"; // Add this import
 import { Product } from "@/types/product";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
